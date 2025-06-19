@@ -1,86 +1,52 @@
+
+// #####################################################################
+// #                             User Router                           #
+// #####################################################################
+
+
+//  ------------------ Imports ------------------
+
 const express = require('express');
 const router = express.Router();
-const UserFromDB = require('../models/user_model');
-const {generateToken} = require('../utils/generateToken');
-const {
-        registerUser, 
-        loginUser,
-        logoutUser } = require('../controllers/authController');
-
-
-router.get('/api/', async (req, res) => {
-    try {
-        const users = await UserFromDB.find({}, 'name email _id profile_type');
-        res.status(200).json({
-            success: true,
-            users: users
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Error fetching users'
-        });
-    }
-});
-
-
-router.get('/api/:id', async (req, res) => {
-    try {
-        const user = await UserFromDB.findById(req.params.id, 'name email _id');
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
-        res.status(200).json({
-            success: true,
-            user: user
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Error fetching user'
-        });
-    }
-});
-
-router.post('/switch-profile/', async (req, res) => {
-    try {
-        const user = await UserFromDB.findById(req.body.userId);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
-        user.profile_type = req.body.profileType;
-        await user.save();
-        res.status(200).json({
-            success: true,
-            message: `Profile type updated to ${user.profile_type} successfully`
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Error updating profile type'
-        });
-    }
-});
+const { getAllUsers, 
+        getUserById, 
+        getMyProfile, 
+        updateUserProfile, 
+        switchUserProfileType } = require('../controllers/userController');
+const isLoggedIn = require('../middlewares/isLoggedIn');
 
 
 
-// @access  Public
-router.post('/register', registerUser);
+// #####################################################################
+// #                            Route Definitions                      #
+// #####################################################################
 
 
-router.post('/login', loginUser);
+// ! All routes in this file are protected by default.
+router.use(isLoggedIn);
 
-// Route to logout user
-// @route   POST /logout
-// @desc    Logout user by clearing token cookie
-// @access  Private
-router.post('/logout', logoutUser);
+
+// * @route   GET /api/v1/users/me
+// * @desc    Get the profile of the currently logged-in user
+// * @access  Private
+router.get('/me', getMyProfile);
+router.put('/me', updateUserProfile);
+router.put('/me/switch-profile', switchUserProfileType);
+
+// * @route   GET /api/v1/users
+// * @desc    Get all users
+// * @access  Private (should be restricted to Admins in a real app)
+router.get('/', getAllUsers);
+
+
+// * @route   GET /api/v1/users/:id
+// * @desc    Get a specific user by their ID
+// * @access  Private
+router.get('/:id', getUserById);
+
+
+// ? TO-DO: Add routes for updating and deleting a user profile.
+// ? router.put('/me', updateUserProfile);
+// ? router.delete('/me', deleteUserProfile);
 
 module.exports = router;
-

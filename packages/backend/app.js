@@ -1,97 +1,121 @@
 
 // #####################################################################
 // #                 Adoptly API Server - Main Entry Point             #
+// #      This file configures the Express application, sets up        #
+// #         middleware, and connects all the API routers.             #
 // #####################################################################
 
-// packages/backend/app.js
 
-
-// * ------------------ Imports ------------------
+//  ------------------ Imports ------------------
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const cors = require('cors');
-const expressSession = require('express-session');
-const flash = require('connect-flash');
-require('dotenv').config();
+const cors = require('cors'); 
+require('dotenv').config(); 
 
 
-//* Import database connection and routers
+//  --- Local Module Imports ---
+//  Establishes database connection as soon as the app starts
 
-const db = require('./config/mongoose-connection');
-const sellerRouter = require('./routes/sellerRouter');
-const petsRouter = require('./routes/petsRouter');
-const index = require('./routes/index');
+const dbConnection = require('./config/mongoose-connection');
+
+//  --- Router Imports ---
+
+const authRouter = require('./routes/authRouter');
 const usersRouter = require('./routes/usersRouter');
+const petsRouter = require('./routes/petsRouter');
 
-// ? The old isLoggedIn middleware needs to be updated for JWT.
-const isLoggedIn = require('./middlewares/isLoggedIn');
 
+//  --- App Initialization ---
 
 const app = express();
+
+
 
 // #####################################################################
 // #                          Core Middleware                          #
 // #####################################################################
 
-// ! CRITICAL: CORS must be configured correctly for the React frontend to communicate with the API.
-// 1. CORS - Allow requests from your React frontend
+
+// ! CRITICAL: CORS must be configured to allow requests from your React frontend.
 app.use(cors({
-    origin: 'http://localhost:5173', // The default port for Vite React apps
-    credentials: true // Allows cookies to be sent
+    origin: 'http://localhost:5173', // =-= This MUST match the port your Vite/React dev server is running on.
+    credentials: true // * Allows frontend to send/receive cookies for authentication.
 }));
 
 
-// 2. Body Parsers - To understand JSON and URL-encoded data
+// Middleware to parse incoming JSON payloads.
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
 
+// Middleware to parse incoming URL-encoded payloads (e.g., from HTML forms).
+app.use(express.urlencoded({ extended: true }));
 
-// 3. Cookie Parser - To read cookies (useful for JWT in httpOnly cookies)
+// Middleware to parse cookies, essential for handling JWT stored in httpOnly cookies.
 app.use(cookieParser());
 
-
-// 4. Static Files (if you have image uploads, etc.)
+// Serves static files (like uploaded pet images) from the 'public' directory.
 app.use(express.static(path.join(__dirname, "public")));
 
-
-app.use(
-    expressSession(
-    {
-        resave: false,
-        saveUninitialized: false,
-        secret: process.env.SESSION_SECRET
-    }));
-app.use(flash());
-app.set("view engine", "ejs");
 
 
 // #####################################################################
 // #                            API Routes                             #
 // #####################################################################
 
-// Standard practice to prefix API routes with '/api'
 
-app.use("/", index);
-app.use("/users", usersRouter);
-app.use("/pets", isLoggedIn, petsRouter);
+//  A simple API "health check" route to confirm the server is running.
 
-
-// * A simple API "health check" route to confirm the server is running.
-
-app.get("/", (req, res) => {
-    res.status(200).json({ message: "Adoptly API is running!" });
+app.get("/api/v1", (req, res) => 
+{
+    res.status(200).json({ message: "Adoptly API is up and running!" });
 });
+
+
+// Mount the routers on their respective base paths.
+
+// =-= All authentication-related routes are under `/api/v1/auth`
+app.use("/api/v1/auth", authRouter);
+
+// =-= All user data-related routes are under `/api/v1/users`
+app.use("/api/v1/users", usersRouter);
+
+// =-= All pet-related routes are under `/api/v1/pets`
+app.use("/api/v1/pets", petsRouter);
+
+
+
+
+// #####################################################################
+// #                     Error Handling Middleware                     #
+// #####################################################################
+
+
+//  --- 404 Not Found Handler ---
+// ! This must be the LAST route handler. It catches any request that didn't match a route above.
+app.use((req, res, next) => 
+{
+    res.status(404).json({ message: `Not Found - The requested URL ${req.originalUrl} does not exist.` });
+});
+
+//  --- Global Error Handler ---
+// ? A more advanced implementation could log errors differently based on NODE_ENV.
+app.use((err, req, res, next) => 
+{
+    console.error("! GLOBAL ERROR HANDLER CAUGHT AN ERROR:");
+    console.error(err.stack);
+    res.status(500).json({ message: "An unexpected error occurred on the server." });
+});
+
+
 
 
 // #####################################################################
 // #                           Server Startup                          #
 // #####################################################################
 
-// Listen on provided PORT or default to 3000
 const PORT = process.env.PORT || 3000;
-app.listen(PORT);
-console.log(`Server is running on port ${PORT}`);
-
-
+app.listen(PORT, () => {
+    console.log(`* Server is live and listening on port ${PORT}`);
+    console.log(`* API available at http://localhost:${PORT}/api/v1`);
+});
