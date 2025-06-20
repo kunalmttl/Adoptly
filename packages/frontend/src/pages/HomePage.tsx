@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion"; 
 import Preloader from "@/components/common/Preloader";
+import InfoCard from "@/components/home/InfoCard";
+import { HeartHandshake, Users, Dog } from "lucide-react";
+import ChoiceCard from "@/components/home/ChoiceCard";
+import SocialsFooter from "@/components/home/SocialsFooter"; 
 
 // Animation variants for the main text container
 const headingContainerVariants: Variants = {
@@ -85,10 +89,80 @@ const HomePage = () =>
       </section>
 
       {/* Second Section to allow scrolling */}
-      <section className="h-screen bg-neutral-100 p-8">
-        <h2 className="text-center text-4xl font-bold">More Content Here</h2>
-        <p className="mt-4 text-center">The page is now scrollable.</p>
+      <section className="bg-neutral-50 py-16 sm:py-24">
+        <div className="container mx-auto px-4">
+      
+          {/* Section Header */}
+          <div className="mb-16 text-center">
+            <h2 className="text-4xl font-bold text-neutral-800"> Why Choose Adoptly? </h2>
+            <p className="mt-4 text-lg text-neutral-600"> Because we enable direct pet adoption, from one good home to another.</p>
+          </div>
+      
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        
+            {/* Card 1 */}
+            <InfoCard 
+              icon={<HeartHandshake size={48} className="text-green-600" />}
+              title="Ethical & Kind">
+              <p className="mb-4">We believe that...</p>
+              <ul className="list-disc space-y-2 pl-5">
+                <li>Every pet deserves to be safe, loved, and respected.</li>
+                <li>Great people seeking to adopt shouldn't face complicated, one-size-fits-all rules.</li>
+                <li>Rehoming a pet should be an empowering and judgment-free process.</li>
+              </ul>
+            </InfoCard>
+
+            {/* Card 2 */}
+            <InfoCard 
+              icon={<Dog size={48} className="text-green-600" />}
+              title="Adoption First">
+              <p> Our platform champions adoption, directly reducing the demand for puppy farming and unethical breeding. We provide a safe, transparent alternative to marketplaces where pets are treated like products. We are proud supporters of #AdoptDontShop. </p>
+            </InfoCard>
+
+            {/* Card 3 */}
+            <InfoCard 
+              icon={<Users size={48} className="text-green-600" />}
+              title="Direct & Simple">
+              <p> We're champions of rehoming, but not at any cost. By connecting good people with good pets directly, we foster a community built on trust and mutual respect, ensuring a better match for everyone involved. </p>
+            </InfoCard>
+
+          </div>
+        </div>
       </section>
+
+      {/* Choice Section */}
+      <section className="bg-white py-16 sm:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+
+            {/* Card 1: Find a Pet */}
+            <ChoiceCard
+              imageUrl="https://images.pexels.com/photos/4588052/pexels-photo-4588052.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              title="Find a Friend"
+              description="Begin your search for the perfect companion. Browse hundreds of profiles of loving pets waiting for a family just like yours."
+              buttonText="Browse Pets"
+              buttonLink="/browse"
+              imagePosition="left"
+            />
+
+            {/* Card 2: List a Pet */}
+            <ChoiceCard
+              imageUrl="https://images.pexels.com/photos/5952136/pexels-photo-5952136.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              title="Rehome Your Pet"
+              description="Give your pet a chance at a new loving home. Our simple and secure process helps you find the best possible match."
+              buttonText="List Your Pet"
+              buttonLink="/sell"
+              imagePosition="right"
+            />
+
+          </div>
+        </div>
+      </section>
+      {/* Socials Footer */}
+      <SocialsFooter />
+
+      {/* Footer */}
     </>
   );
 };
