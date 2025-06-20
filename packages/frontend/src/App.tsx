@@ -9,6 +9,9 @@ import AppLayout from './layout/AppLayout';
 // Import Pages
 import HomePage from "@/pages/HomePage";
 import BrowsePetsPage from "@/pages/BrowsePetsPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import AuthLayout from './layout/AuthLayout';
 
 
 function App() 
@@ -24,6 +27,8 @@ function App()
             path="/" 
             element={<HomePage />} 
           />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Route>
 
         {/* --- Route Group 2: Main App Layout --- */}
@@ -34,7 +39,11 @@ function App()
             element={<BrowsePetsPage />} 
           />
         </Route>
-        
+
+        {/* --- Route Group 3: Auth Layout --- */}
+        {/* login, register */}
+        <Route element={<AuthLayout />}>
+        </Route>
       </Routes>
     </Router>
   );
