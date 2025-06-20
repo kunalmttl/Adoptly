@@ -1,7 +1,7 @@
 // src/layout/AppLayout.tsx
 
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/layout/NavBar"; // Import the Navbar
+import Navbar from "../components/layout/Navbar"; // Import the Navbar
 
 const AppLayout = () => {
   return (
@@ -16,7 +16,7 @@ const AppLayout = () => {
       {/* --- Navbar Area --- */}
       {/* This component will span across both columns. */}
       <div className="col-span-2">
-        <Navbar />
+        <Navbar layoutType="static"/>
       </div>
 
       {/* --- Aside Panel Area --- */}

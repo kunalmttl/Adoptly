@@ -1,7 +1,8 @@
 // src/layout/MinimalLayout.tsx
 
-import Navbar from "@/components/layout/NavBar";
+import Navbar from "@/components/layout/Navbar";
 import { Outlet } from "react-router-dom";
+
 
 const MinimalLayout = () => {
   return (
