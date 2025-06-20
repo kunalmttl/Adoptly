@@ -9,5 +9,8 @@
     "dev:backend": "npm run dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
     "dev": "npm run dev:backend & npm run dev:frontend"
+  },
+  "dependencies": {
+    "tailwindcss-animate": "^1.0.7"
   }
 }

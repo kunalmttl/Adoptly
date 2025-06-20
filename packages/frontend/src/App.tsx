@@ -1,21 +1,10 @@
 
-
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import MinimalLayout from './components/layout/MinimalLayout';
-import HomePage from './pages/HomePage';
-
-
-function App() 
-{
-    return (
-        <Router>
-            <Routes>
-                <Route element={<MinimalLayout />}>
-                    <Route path="/" element={<HomePage />} />
-                </Route>
-            </Routes>
-        </Router>
-    );
+const App = () => {
+  return (
+    <div>
+      <p>hello</p>
+    </div>
+  )
 }
 
-export default App;
+export default App
