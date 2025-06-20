@@ -1,13 +1,21 @@
 
-const App = () => {
-  return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline text-blue-500 ">
-        Hello world!
-      </h1>
-      <p>This is a simple React application.</p>
-    </div>
-  )
+
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import MinimalLayout from './components/layout/MinimalLayout';
+import HomePage from './pages/HomePage';
+
+
+function App() 
+{
+    return (
+        <Router>
+            <Routes>
+                <Route element={<MinimalLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                </Route>
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;
