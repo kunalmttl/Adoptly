@@ -1,15 +1,16 @@
 // src/layout/AppLayout.tsx
-
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/layout/Navbar"; // Import the Navbar
 import PetFilters from "@/components/browse/PetFilters";
 import useSmoothScroll from "@/hooks/useSmoothScroll";
+import CustomCursor from "@/components/common/CustomCursor";
 const AppLayout = () => {
 
     useSmoothScroll();
 
   return (
     <div className="grid h-screen grid-rows-[auto_1fr] grid-cols-[200px_1fr]">
+      <CustomCursor />
       {/* 
         Tailwind CSS Grid Explanation:
         - h-screen: Make the container take up the full viewport height.
