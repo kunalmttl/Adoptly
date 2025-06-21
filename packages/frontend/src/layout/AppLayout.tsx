@@ -2,6 +2,7 @@
 
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/layout/Navbar"; // Import the Navbar
+import PetFilters from "@/components/browse/PetFilters";
 
 const AppLayout = () => {
   return (
@@ -21,8 +22,8 @@ const AppLayout = () => {
 
       {/* --- Aside Panel Area --- */}
       {/* This component will sit in the second row, first column. */}
-      <aside className="row-start-2 bg-neutral-800 p-4 text-white">
-        <p>Aside Panel</p>
+      <aside className="row-start-2 bg-neutral-800 text-white">
+        <PetFilters/>
       </aside>
 
       {/* --- Main Content Area --- */}
