@@ -2,9 +2,10 @@
 
 import Navbar from "@/components/layout/Navbar";
 import { Outlet } from "react-router-dom";
-
+import useSmoothScroll from "@/hooks/useSmoothScroll";
 
 const MinimalLayout = () => {
+    useSmoothScroll();
   return (
     <div>
       {/* We will add the Navbar here later */}

@@ -22,15 +22,15 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
 
 
     const navLinks = [
-      { href: "/browse", label: "Browse Pets" },
-      { href: "/sell", label: "List a Pet" },
+      { href: "/browse", label: "Adopt a pet" },
+      { href: "/sell", label: "List your Pet" },
       { href: "/contact", label: "Contact Us" },
       { href: "/login", label: "Login / Register" },
     ];
 
     return (
         <header className={headerClasses}>
-            <div className="container mx-auto flex h-24 items-center justify-between px-4">
+            <div className="container mx-auto flex h-24 items-center justify-between px-1">
                 
                 <Link 
                     to="/" 
@@ -48,8 +48,8 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                     <SheetTrigger asChild>
                         <Button 
                             variant="outline" 
-                            className="h-12 w-12 rounded-full border-neutral-700 bg-black text-white hover:bg-neutral-800 hover:text-white">
-                            ☰
+                            className="h-14 w-14 rounded-full border-transparent bg-transparent text-white hover:bg-neutral-800 hover:text-white">
+                            <span className="text-2xl leading-none">☰</span>
                         </Button>
                     </SheetTrigger>
                     

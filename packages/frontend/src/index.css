@@ -2,6 +2,19 @@
 
 @import "tw-animate-css";
 
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
