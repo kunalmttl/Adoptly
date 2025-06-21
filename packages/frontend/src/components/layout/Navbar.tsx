@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-
+import PetSearch from "./PetSearch";
 
 interface NavbarProps {
     layoutType?: 'fixed' | 'static'; // The '?' makes it optional
@@ -38,6 +38,11 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                     <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
                     {/* <img src="/adoptlytext.svg" alt="Adoptly Text" className="ml-2 mt-3 h-25 w-auto" /> */}
                 </Link>
+
+                {layoutType === 'static' && (
+                <div className="hidden lg:flex flex-1 justify-center">
+                    <PetSearch />
+                </div>)}
 
                 <Sheet>
                     <SheetTrigger asChild>
