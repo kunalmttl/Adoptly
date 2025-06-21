@@ -56,7 +56,7 @@ const HomePage = () =>
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative h-screen w-full overflow-hidden bg-black">
+      <section className="font-poppins relative h-screen w-full overflow-hidden bg-black">
         {/* Background Video */}
         <video
           autoPlay
@@ -70,19 +70,20 @@ const HomePage = () =>
         <div className="absolute top-0 left-0 z-10 h-full w-full bg-black/50" />
         
         {/* Content */}
-        <div className="relative z-20 flex h-full flex-col items-start  justify-end py-10 p-5 text-center text-white">
+        <div className="font-poppins relative z-20 flex h-full flex-col items-start  justify-end py-10 p-5 text-center text-white">
           <motion.h1
             className="
               text-right font-black leading-none 
-              text-[10rem] md:text-[10rem] lg:text-[15rem]
+              text-[5rem] md:text-[5rem] lg:text-[10rem]
             "
             variants={headingContainerVariants}
             initial="hidden"
 
             animate={!isLoading ? "visible" : "hidden"} // Animate only when loading is done
           >
-            <motion.span className="block" variants={headingItemVariants}>
+            <motion.span className="group relative inline-block cursor-pointer text-white" variants={headingItemVariants}>
               adoptly
+              <span className="absolute -bottom-1 left-0 h-[6px] w-0 bg-white transition-all duration-500 group-hover:w-full" />
             </motion.span>
           </motion.h1>
         </div>
@@ -94,12 +95,12 @@ const HomePage = () =>
       
           {/* Section Header */}
           <div className="mb-16 text-center">
-            <h2 className="text-4xl font-bold text-neutral-800"> Why Choose Adoptly? </h2>
-            <p className="mt-4 text-lg text-neutral-600"> Because we enable direct pet adoption, from one good home to another.</p>
+            <h2 className="font-poppins text-4xl font-bold text-neutral-800"> WHY CHOOSE ADOPTLY? </h2>
+            <p className="font-montserrat mt-4 text-lg text-neutral-600"> Because we enable direct pet adoption, from one good home to another.</p>
           </div>
       
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="font-montserrat grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         
             {/* Card 1 */}
             <InfoCard 

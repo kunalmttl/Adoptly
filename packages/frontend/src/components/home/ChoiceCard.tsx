@@ -65,13 +65,13 @@ const ChoiceCard = (
         flex flex-col p-8 sm:p-12 
         ${imagePosition === 'left' ? 'md:order-2' : 'md:order-1'}
       `}>
-        <h3 className="text-3xl font-bold text-neutral-800">
+        <h3 className="font-poppins text-3xl font-bold text-neutral-800">
           {title}
         </h3>
-        <p className="mt-4 flex-grow text-neutral-600">
+        <p className="font-montserrat mt-4 flex-grow text-neutral-600">
           {description}
         </p>
-        <div className="mt-8">
+        <div className="font-montserrat mt-8">
           <Link to={buttonLink}>
             <Button size="lg" className="group">
               {buttonText}

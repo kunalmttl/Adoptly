@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import PetSearch from "./PetSearch";
+import { useCursor } from "@/context/CursorContext"; 
 
 interface NavbarProps {
     layoutType?: 'fixed' | 'static'; // The '?' makes it optional
@@ -28,11 +29,16 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
       { href: "/login", label: "Login / Register" },
     ];
 
+    const { setVariant } = useCursor();
+
+
     return (
         <header className={headerClasses}>
             <div className="container mx-auto flex h-24 items-center justify-between px-1">
                 
-                <Link 
+                <Link onMouseEnter={() => setVariant('text')}
+            onMouseLeave={() => setVariant('default')}
+
                     to="/" 
                     className={`flex items-center ${textColor}`}>
                     <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />

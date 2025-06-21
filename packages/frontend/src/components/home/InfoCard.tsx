@@ -17,8 +17,10 @@ interface InfoCardProps
 
 const InfoCard = ({ icon, title, children }: InfoCardProps) => 
 {
+
     return (
-        <Card className="flex h-full flex-col border-none bg-white text-center shadow-lg">
+        <Card className="flex h-full flex-col border-none bg-white text-center shadow-lg" >
+            
             <CardHeader>
                 {/* Icon with circular background */}
                 <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">

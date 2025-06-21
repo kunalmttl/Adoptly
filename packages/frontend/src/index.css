@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Poppins:wght@700&display=swap');
 @import "tailwindcss";
 
 @import "tw-animate-css";
 
-@import "cursor";
 
 html.lenis {
   height: auto;
@@ -19,6 +19,8 @@ html.lenis {
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-poppins: "Poppins", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -124,6 +126,13 @@ html.lenis {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.553 0.013 58.071);
 }
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
 
 @layer base {
   * {
