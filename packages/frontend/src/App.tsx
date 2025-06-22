@@ -1,6 +1,7 @@
 // src/App.tsx
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 
 // Import Layouts
 import MinimalLayout from './layout/MinimalLayout';
@@ -18,6 +19,7 @@ function App()
 {
   return (
     <Router>
+      <Toaster position="top-center" />
       <Routes>
 
         {/* --- Route Group 1: Minimal Layout --- */}

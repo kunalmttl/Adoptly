@@ -33,7 +33,7 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
             onMouseLeave={() => setVariant('default')}
 
                     to="/" 
-                    className={`flex items-center ${textColor}`}>
+                    className={`flex items-center ${textColor} `}>
                     <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
                     {/* <img src="/adoptlytext.svg" alt="Adoptly Text" className="ml-2 mt-3 h-25 w-auto" /> */}
                 </Link>
