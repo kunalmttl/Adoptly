@@ -3,17 +3,21 @@ import { isAxiosError } from "axios";
 import { loginUser } from "@/api/authAPI";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/store/authStore";
+import type { User } from "@/store/authStore"; 
 
 
 const LoginPage = () => {
 
         const navigate = useNavigate();
+        const { setUser } = useAuthStore(); 
+
 
         const handleLogin = async (values: AuthFormValues) => {
     try {
       // Await the API call
       const { user } = await loginUser(values);
-
+      setUser(user as User);
       // Show a success notification
       toast.success(`Welcome back, ${user.name}!`);
       

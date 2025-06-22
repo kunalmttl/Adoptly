@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import PetSearch from "./PetSearch";
 import { useCursor } from "@/context/CursorContext"; 
 import Header from "@/components/Header"; 
+import { UserNav } from "./UserNav"; // <-- Import the new UserNav
+import { useAuthStore } from "@/store/authStore"; 
+
 
 interface NavbarProps {
     layoutType?: 'fixed' | 'static'; // The '?' makes it optional
@@ -11,6 +14,9 @@ interface NavbarProps {
 
 
 const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
+
+    const { user } = useAuthStore();
+
 
     const headerClasses = layoutType === 'fixed'
         ? 'fixed top-0 left-0 z-50 w-full' // For MinimalLayout
@@ -43,7 +49,9 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                     <PetSearch />
                 </div>)}
 
-                <Header /> 
+                <div className="flex items-center gap-4">
+                    {user ? (<UserNav /> ) : (<Header />  )}
+                </div> 
                 
             </div>
         </header>
