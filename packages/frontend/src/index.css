@@ -19,6 +19,7 @@ html.lenis {
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-beige: #feffeb;
   --font-poppins: "Poppins", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);

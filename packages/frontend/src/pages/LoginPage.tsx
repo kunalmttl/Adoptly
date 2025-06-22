@@ -7,7 +7,7 @@ const LoginPage = () => {
         };
 
   return (
-  <div className="flex min-h-screen items-center justify-center bg-neutral-50 pt-24">
+  <div className="flex min-h-screen items-center justify-center bg-beige pt-24">
           <AuthForm formtype="login" onSubmit={handleLogin} />;
   </div>
 )};

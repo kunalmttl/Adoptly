@@ -1,10 +1,9 @@
 // src/components/layout/Navbar.tsx
 
 import { Link } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import PetSearch from "./PetSearch";
 import { useCursor } from "@/context/CursorContext"; 
+import Header from "@/components/Header"; 
 
 interface NavbarProps {
     layoutType?: 'fixed' | 'static'; // The '?' makes it optional
@@ -17,17 +16,11 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
         ? 'fixed top-0 left-0 z-50 w-full' // For MinimalLayout
         : 'relative z-50 w-full border-b bg-neutral-900'; // For AppLayout
 
+        const textColor = layoutType === 'fixed' ? 'text-white' : 'text-neutral-200';
+
 
     // Dynamically set text color
-    const textColor = layoutType === 'fixed' ? 'text-white' : 'text-neutral-200';
-
-
-    const navLinks = [
-      { href: "/browse", label: "Adopt a pet" },
-      { href: "/sell", label: "List your Pet" },
-      { href: "/contact", label: "Contact Us" },
-      { href: "/login", label: "Login / Register" },
-    ];
+    
 
     const { setVariant } = useCursor();
 
@@ -50,32 +43,7 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                     <PetSearch />
                 </div>)}
 
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button 
-                            variant="outline" 
-                            className="h-14 w-14 rounded-full border-transparent bg-transparent text-white hover:bg-neutral-800 hover:text-white">
-                            <span className="text-2xl leading-none">☰</span>
-                        </Button>
-                    </SheetTrigger>
-                    
-                    {/* --- We are now using SheetContent --- */}
-                    <SheetContent className="border-l border-neutral-800 bg-black text-white sm:w-[400px]">
-                        <nav className="flex h-full flex-col justify-center text-3xl font-bold space-y-2">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    to={link.href}
-                                    className="block p-4 rounded-lg hover:bg-neutral-900"
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </SheetContent>
-                    {/* ------------------------------------ */}
-
-                </Sheet>
+                <Header /> 
                 
             </div>
         </header>
