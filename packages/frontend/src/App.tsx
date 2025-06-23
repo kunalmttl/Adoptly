@@ -16,6 +16,7 @@ import AuthLayout from './layout/AuthLayout';
 import ListPetPage from "@/pages/ListPetPage";
 import MyListingsPage from "@/pages/MyListingsPage";
 import PetDetailsPage from './pages/PetDetailsPage';
+import UserSettingsPage from './pages/UserSettingsPage';
 
 function App() 
 {
@@ -33,6 +34,7 @@ function App()
           <Route path="/sell" element={<ListPetPage />} />
           <Route path="/my-listings" element={<MyListingsPage />} />
           <Route path="/pets/:id" element={<PetDetailsPage />} />
+          <Route path="/settings" element={<UserSettingsPage />} />
         </Route>
 
         {/* --- Route Group 2: Main App Layout --- */}
