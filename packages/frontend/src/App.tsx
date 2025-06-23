@@ -2,6 +2,7 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import CustomCursor from "@/components/common/CustomCursor";
 
 // Import Layouts
 import MinimalLayout from './layout/MinimalLayout';
@@ -23,6 +24,7 @@ function App()
   return (
     <Router>
       <Toaster position="top-center" />
+      <CustomCursor />
       <Routes>
 
         {/* --- Route Group 1: Minimal Layout --- */}

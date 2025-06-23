@@ -11,11 +11,15 @@ interface PetCardProps
   name: string;
   age: number;
   isVaccinated: boolean;
+  location: {
+        city: string;
+    country: string;
+  }
   status: 'available' | 'pending' | 'adopted';
 }
 
 
-const PetCard = ({ id, imageUrl, name, age, isVaccinated, status }: PetCardProps) => 
+const PetCard = ({ id, imageUrl, name, age, isVaccinated, status , location}: PetCardProps) => 
 {
         // Define animation for when the card appears in the grid
         const cardVariants = 
@@ -40,6 +44,7 @@ const PetCard = ({ id, imageUrl, name, age, isVaccinated, status }: PetCardProps
                         <div className="p-4 bg-white">
                                 <h3 className="text-lg font-bold text-neutral-800 group-hover:text-indigo-600 transition-colors"> {name} </h3>
                                 <p className="text-sm text-neutral-500"> {age} {age === 1 ? 'year' : 'years'} old </p>
+                                <p className="text-sm text-neutral-500"> {location.city}, {location.country} </p>
                                 
                                 {/* Status Tags */}
                                 <div className="mt-4 flex flex-wrap gap-2">
