@@ -41,8 +41,8 @@ function App()
 
         {/* --- Route Group 2: Main App Layout --- */}
         {/* browse pets page */}
-        <Route element={<AppLayout />}>
-          <Route 
+        <Route element={<AppLayout  />}>
+          <Route
             path="/browse" 
             element={<BrowsePetsPage />} 
           />

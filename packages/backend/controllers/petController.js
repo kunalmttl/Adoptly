@@ -18,13 +18,37 @@ exports.getAllPets = async (req, res) =>
 {
     try 
     {
-        // ? TO-DO: Implement filtering (by species, city) and sorting from query params.
-        // ? Example: /api/v1/pets?species=dog&city=NewYork
-        const pets = await Pet.find({ status: 'available' }).populate('listed_by', 'name city');
+        // 1. Start with a base query object
+        const queryObj = {};
+
+        // 2. Dynamically add filters from the request query parameters
+        if (req.query.species && req.query.species !== 'all') {
+            queryObj.species = req.query.species;
+        }
+        if (req.query.breed) {
+            // Use a case-insensitive regex for partial matches
+            queryObj.breed = { $regex: req.query.breed, $options: 'i' };
+        }
+        if (req.query.gender) {
+            queryObj.gender = req.query.gender;
+        }   
+        if (req.query.status && req.query.status !== 'all') {
+              queryObj.status = req.query.status;
+
+
+        }
+        if (req.query.details) {
+            queryObj.details = req.query.details;
+        }
+        // You can add more filters here for age, vaccinated status, etc.
+
+        // 3. Execute the query with the dynamically built filter object
+        const pets = await Pet.find(queryObj).populate('listed_by', 'name city');
+        // ------------------------------------
+
         res.status(200).json(pets);
-    } 
-    catch (err) 
-    {
+    } catch (err) {
+        console.error("Error in getAllPets:", err); // Improved logging
         res.status(500).json({ message: 'Error fetching pets.' });
     }
 };
