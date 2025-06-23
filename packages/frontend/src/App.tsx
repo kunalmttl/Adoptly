@@ -13,7 +13,8 @@ import BrowsePetsPage from "@/pages/BrowsePetsPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import AuthLayout from './layout/AuthLayout';
-
+import ListPetPage from "@/pages/ListPetPage";
+import MyListingsPage from "@/pages/MyListingsPage";
 
 function App() 
 {
@@ -25,12 +26,11 @@ function App()
         {/* --- Route Group 1: Minimal Layout --- */}
         {/* landing page, register, contact us */}
         <Route element={<MinimalLayout />}>
-          <Route 
-            path="/" 
-            element={<HomePage />} 
-          />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/sell" element={<ListPetPage />} />
+          <Route path="/my-listings" element={<MyListingsPage />} />
         </Route>
 
         {/* --- Route Group 2: Main App Layout --- */}

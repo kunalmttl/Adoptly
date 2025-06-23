@@ -6,10 +6,20 @@ import { useCursor } from "@/context/CursorContext";
 import Header from "@/components/Header"; 
 import { UserNav } from "./UserNav"; // <-- Import the new UserNav
 import { useAuthStore } from "@/store/authStore"; 
-
+import { ProfileSwitcher } from "./ProfileSwitcher"; 
 
 interface NavbarProps {
     layoutType?: 'fixed' | 'static'; // The '?' makes it optional
+}
+
+const GuestMenu = () => {
+    // Call the hook only inside the component that needs it.
+    const { setVariant } = useCursor();
+    return (
+        <div onMouseEnter={() => setVariant('hover')} onMouseLeave={() => setVariant('default')}>
+            <Header />
+        </div>
+    );
 }
 
 
@@ -50,8 +60,15 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                 </div>)}
 
                 <div className="flex items-center gap-4">
-                    {user ? (<UserNav /> ) : (<Header />  )}
-                </div> 
+                    {user ? (
+                        <>
+                            <ProfileSwitcher /> 
+                            <UserNav />
+                        </>
+                    ) : (
+                        <GuestMenu />
+                    )}
+                </div>
                 
             </div>
         </header>

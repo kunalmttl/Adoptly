@@ -6,7 +6,7 @@
 
 //  ------------------ Imports ------------------
 
-const Pet = require('../models/pet_model');
+const Pet = require('../models/pet_model'); 
 const User = require('../models/user_model');
 
 
@@ -81,6 +81,20 @@ exports.createPet = async (req, res) =>
             return res.status(400).json({ message: messages.join('. ') });
         }
         res.status(500).json({ message: 'Error creating pet listing.' });
+    }
+};
+
+// * @desc    Get all pets listed by the logged-in user
+// * @route   GET /api/v1/pets/my-listings
+// * @access  Private
+exports.getMyListedPets = async (req, res) => {
+    try {
+        // req.user.id is attached by our `isLoggedIn` middleware
+        const pets = await Pet.find({ listed_by: req.user.id }).sort({ createdAt: -1 });
+        
+        res.status(200).json(pets);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching your pet listings.' });
     }
 };
 
