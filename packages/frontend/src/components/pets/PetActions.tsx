@@ -1,37 +1,49 @@
-// # Pet Actions Component
-// * Displays action buttons for a pet based on user ownership.
-
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+// src/components/pets/PetActions.tsx
 import { useAuthStore } from '@/store/authStore';
+import { Button } from '@/components/ui/button';
+import { Pencil, MessageSquare, Notebook } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-interface PetActionsProps {
+interface PetActionsProps 
+{
   petOwnerId: string;
   petId: string;
 }
 
-const PetActions = ({ petOwnerId, petId }: PetActionsProps) => {
+export const PetActions = ({ petOwnerId, petId }: PetActionsProps) => 
+{
   const { user } = useAuthStore();
+  const isOwner = user?.id === petOwnerId;
 
-  // * Check if the current user is the pet owner
-  if (user?.id === petOwnerId) {
-    return (
-      <div className="flex gap-4">
-        <Link to={`/edit-pet/${petId}`}>
-          <Button>Edit Listing</Button>
-        </Link>
-      </div>
-    );
-  }
-
-  // * Show apply button for non-owners
   return (
-    <div className="flex gap-4">
-      <Link to={`/apply-for-adoption/${petId}`}>
-        <Button>Apply for Adoption</Button>
-      </Link>
+    <div className="mt-8 pt-8 border-t">
+      {isOwner ? (
+        // View for the pet's owner
+        <div className="space-y-4">
+          <p className="font-semibold">This is your listing.</p>
+          <Link to={`/pets/${petId}/edit`}>
+            <Button size="lg" className="w-full">
+              <Pencil className="mr-2 h-4 w-4" /> Edit Listing
+            </Button>
+          </Link>
+          <Link to={`/pets/${petId}/applications`}>
+            <Button size="lg" className="mt-2 w-full">
+              <Notebook className="mr-2 h-4 w-4" /> View Applications
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        // View for potential adopters
+        <div className="space-y-4">
+           <p className="font-semibold">Interested in adopting?</p>
+           <Button size="lg" className="w-full bg-orange-500 hover:bg-orange-600">
+            Apply for Adoption
+          </Button>
+          <Button size="lg" variant="outline" className="w-full">
+            <MessageSquare className="mr-2 h-4 w-4" /> Contact Seller
+          </Button>
+        </div>
+      )}
     </div>
   );
-};
-
-export default PetActions;
+};     

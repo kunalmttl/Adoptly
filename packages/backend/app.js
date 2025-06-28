@@ -25,7 +25,7 @@ const dbConnection = require('./config/mongoose-connection');
 const authRouter = require('./routes/authRouter');
 const usersRouter = require('./routes/usersRouter');
 const petsRouter = require('./routes/petsRouter');
-const applicationRouter = require('./routes/applicationRouter');
+
 
 //  --- App Initialization ---
 
@@ -82,8 +82,6 @@ app.use("/api/v1/users", usersRouter);
 
 // =-= All pet-related routes are under `/api/v1/pets`
 app.use("/api/v1/pets", petsRouter);
-
-app.use('/api/v1/applications', applicationRouter);
 
 
 

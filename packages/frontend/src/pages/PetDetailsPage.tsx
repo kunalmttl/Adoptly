@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom';
 import { getPetById } from '@/api/petAPI';
 
 import { PetImageGallery } from '@/components/pets/PetImageGallery';
-import  {PetInfo}  from '@/components/pets/PetInfo';
-import PetActions  from '@/components/pets/PetActions';
+import { PetInfo } from '@/components/pets/PetInfo';
+import { PetActions } from '@/components/pets/PetActions';
 import { Loader2 } from 'lucide-react';
 
 // Define the full Pet type
