@@ -19,6 +19,7 @@ import MyListingsPage from "@/pages/MyListingsPage";
 import PetDetailsPage from './pages/PetDetailsPage';
 import UserSettingsPage from './pages/UserSettingsPage';
 import EditPetPage from '@/pages/EditPetPage';
+import ApplyForAdoptionPage from './pages/ApplyForAdoptionPage';
 
 
 function App() 
@@ -40,6 +41,7 @@ function App()
           <Route path="/my-listings" element={<MyListingsPage />} />
           <Route path="/pets/:id" element={<PetDetailsPage />} />
           <Route path="/settings" element={<UserSettingsPage />} />
+          <Route path="/apply/:id" element={<ApplyForAdoptionPage />} />
         </Route>
 
         {/* --- Route Group 2: Main App Layout --- */}

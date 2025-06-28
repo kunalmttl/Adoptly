@@ -111,17 +111,15 @@ exports.updateUserProfile = async (req, res) =>
 // * @desc    Switch the logged-in user's profile type
 // * @route   PUT /api/v1/users/me/switch-profile
 // * @access  Private
-exports.switchUserProfileType = async (req, res) => 
-{
-    try
-    {
+exports.switchUserProfileType = async (req, res) => {
+    try {
         const user = await User.findById(req.user.id);
         
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
         
-        // * Toggle the profile type
+        // Toggle the profile type
         const newProfileType = user.profile_type === 'adopter' ? 'seller' : 'adopter';
         user.profile_type = newProfileType;
 
@@ -129,15 +127,17 @@ exports.switchUserProfileType = async (req, res) =>
 
         res.status(200).json({ 
             message: `Profile successfully switched to ${newProfileType}.`,
+            // FIX: Return the full user object to keep frontend state consistent
             user: {
                 id: user._id,
+                name: user.name,
+                email: user.email,
                 profile_type: user.profile_type
             }
         });
 
-    } 
-    catch (err) 
-    {
+    } catch (_error) {
+        console.error("Error switching profile type:", _error);
         res.status(500).json({ message: 'Error switching profile type.' });
     }
 };

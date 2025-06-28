@@ -36,9 +36,11 @@ export const PetActions = ({ petOwnerId, petId }: PetActionsProps) =>
         // View for potential adopters
         <div className="space-y-4">
            <p className="font-semibold">Interested in adopting?</p>
-           <Button size="lg" className="w-full bg-orange-500 hover:bg-orange-600">
-            Apply for Adoption
-          </Button>
+          <Link to={`/apply/${petId}`}>
+            <Button size="lg" className="w-full bg-orange-500 hover:bg-orange-600">
+              Apply for Adoption
+            </Button>
+          </Link>
           <Button size="lg" variant="outline" className="w-full">
             <MessageSquare className="mr-2 h-4 w-4" /> Contact Seller
           </Button>
