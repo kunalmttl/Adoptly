@@ -1,10 +1,10 @@
-// src/pages/BrowsePetsPage.tsx
+// frontend/src/pages/BrowsePetsPage.tsx
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
 // --- Local Imports & Type Definitions ---
-import { getAllPets, type PetFilters as IPetFilters } from "@/api/petAPI";
+import { getAllPets, type Pet, type PetFilters as IPetFilters } from "@/api/petAPI"; // <-- Import new Pet type
 import PetCard from "@/components/browse/PetCard";
 import { PetCardSkeleton } from "@/components/browse/PetCardSkeleton";
 
@@ -13,45 +13,27 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { PetFilters } from "@/components/browse/PetFilters";
 
-
-interface Pet 
-{
-  _id: string; // MongoDB uses _id
-  name: string;
-  age: number;
-  vaccinated: boolean;
-  status: 'available' | 'pending' | 'adopted';
-  images: string[];
-  breed: string;
-  location: { city: string; country: string; };
-}
-
 // --- Main Page Component ---
 const BrowsePetsPage = () => {
   // #####################################################################
   // #                           State Management                        #
   // #####################################################################
   
-  
-  // State for the fetched pet data
-  const [pets, setPets] = useState<Pet[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]); // <-- Use imported Pet type
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // State for the filter criteria, passed down to the filters component
   const [filters, setFilters] = useState<IPetFilters>({
     species: 'all',
     breed: '',
-    vaccinated: false, // Add new filter defaults
-    status: 'all',     // Add new filter defaults
+    vaccinated: false,
+    status: 'all',
   });
-
 
   // #####################################################################
   // #                            Data Fetching                          #
   // #####################################################################
 
-  // We use useCallback to memoize the fetch function, preventing unnecessary re-creation
   const fetchPets = useCallback(async (currentFilters: IPetFilters) => {
     setIsLoading(true);
     setError(null);
@@ -80,8 +62,6 @@ const BrowsePetsPage = () => {
     }
   }, []);
 
-  // This useEffect hook listens for any changes to the 'filters' object.
-  // When a filter changes, it triggers a new API call.
   useEffect(() => {
     fetchPets(filters);
   }, [filters, fetchPets]);
@@ -95,7 +75,7 @@ const BrowsePetsPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08, // Creates a nice cascading effect for the cards
+        staggerChildren: 0.08,
       },
     },
   };
@@ -104,9 +84,7 @@ const BrowsePetsPage = () => {
   // #                           Render Logic                            #
   // #####################################################################
   
-  // A helper function to render the main content based on the current state
   const renderContent = () => {
-    // 1. Show skeletons while loading
     if (isLoading) {
       return (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -117,7 +95,6 @@ const BrowsePetsPage = () => {
       );
     }
 
-    // 2. Show an error message if fetching failed
     if (error) {
       return (
         <div className="flex h-full items-center justify-center pt-20">
@@ -130,7 +107,6 @@ const BrowsePetsPage = () => {
       );
     }
     
-    // 3. Show "No pets found" message if the array is empty
     if (pets.length === 0) {
         return (
             <div className="text-center py-16 col-span-full">
@@ -140,7 +116,6 @@ const BrowsePetsPage = () => {
         )
     }
 
-    // 4. Show the actual pet cards once data is loaded
     return (
       <motion.div
         className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
@@ -153,30 +128,22 @@ const BrowsePetsPage = () => {
             key={pet._id}
             id={pet._id}
             name={pet.name}
-            age={pet.age}
-            // --- FIX #2: Access the nested property ---
-            isVaccinated={pet.vaccinated} 
+            age={pet.age ?? 0} // Provide a fallback for age
+            isVaccinated={pet.health_status?.vaccinated ?? false} // <-- Safely access nested property
             status={pet.status}
             imageUrl={pet.images[0] || '/placeholder-pet.jpg'}
-            location={pet.location}
+            location={pet.location} // <-- Pass the whole location object
           />
         ))}
       </motion.div>
-
     );
   };
   
-  // Note: The AppLayout and PetFilters are now rendered directly by the page
-  // This makes the page a self-contained unit.
   return (
       <div className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-[280px_1fr]">
-      
-      {/* Left Column: Filters */}
       <aside className="lg:sticky lg:top-28 h-fit">
         <PetFilters setFilters={setFilters} />
       </aside>
-
-      {/* Right Column: Pet Grid */}
       <main>
         <div className="mb-8">
             <h1 className="text-3xl font-bold">Find Your Companion</h1>
@@ -184,10 +151,8 @@ const BrowsePetsPage = () => {
         </div>
         {renderContent()}
       </main>
-
     </div>
   );
 };
-
 
 export default BrowsePetsPage;

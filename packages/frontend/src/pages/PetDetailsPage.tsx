@@ -1,64 +1,38 @@
-// src/pages/PetDetailsPage.tsx
+// frontend/src/pages/PetDetailsPage.tsx
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getPetById } from '@/api/petAPI';
+import { getPetById, type Pet } from '@/api/petAPI'; // <-- Import new Pet type
 
 import { PetImageGallery } from '@/components/pets/PetImageGallery';
 import { PetInfo } from '@/components/pets/PetInfo';
 import { PetActions } from '@/components/pets/PetActions';
 import { Loader2 } from 'lucide-react';
 
-// Define the full Pet type
-interface FullPet 
-{
-  _id: string;
-  name: string;
-  species: string;
-  breed: string;
-  age: number;
-  gender: string;
-  description: string;
-  status: string;
-  vaccinated: boolean;
-  images: string[];
-  listed_by: { _id: string; name: string; }; // Assume populated owner info
-}
-
-const PetDetailsPage = () => 
-{
+const PetDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [pet, setPet] = useState<FullPet | null>(null);
+  const [pet, setPet] = useState<Pet | null>(null); // <-- Use imported Pet type
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => 
-  {
+  useEffect(() => {
     if (!id) return;
-    const fetchPet = async () => 
-    {
-      try 
-      {
+    const fetchPet = async () => {
+      try {
         const petData = await getPetById(id);
         setPet(petData);
-      } 
-      catch (error) 
-      {
+      } catch (error) {
         console.error("Failed to fetch pet details", error);
-      } 
-      finally 
-      {
+      } finally {
         setIsLoading(false);
       }
     };
     fetchPet();
   }, [id]);
 
-  if (isLoading) 
-  {
+  if (isLoading) {
     return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
 
-  if (!pet) 
-  {
+  if (!pet) {
     return <div className="flex h-screen items-center justify-center"><p>Pet not found.</p></div>;
   }
 
@@ -68,7 +42,7 @@ const PetDetailsPage = () =>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
           <PetImageGallery images={pet.images} petName={pet.name} />
           <div>
-            <PetInfo pet={{...pet, isVaccinated: pet.vaccinated}} />
+            <PetInfo pet={pet} /> {/* <-- Pass the whole pet object */}
             <PetActions petOwnerId={pet.listed_by._id} petId={pet._id} />
           </div>
         </div>

@@ -1,8 +1,8 @@
-// src/pages/EditPetPage.tsx
+// frontend/src/pages/EditPetPage.tsx
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getPetById, type Pet } from "@/api/petAPI";
+import { getPetById, type Pet } from "@/api/petAPI"; // <-- Use imported Pet type
 import { useAuthStore } from "@/store/authStore";
 
 import { EditPetForm } from "@/components/pets/EditPetForm";
@@ -13,8 +13,7 @@ const EditPetPage = () => {
   const { id: petId } = useParams<{ id: string }>();
   const { user } = useAuthStore();
 
-  // Use the full Pet type from your API module
-  const [pet, setPet] = useState<Pet | null>(null);
+  const [pet, setPet] = useState<Pet | null>(null); // <-- Use imported Pet type
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +27,6 @@ const EditPetPage = () => {
     const fetchPet = async () => {
       try {
         const petData = await getPetById(petId);
-        // Security check: owner match
         if (petData.listed_by._id !== user?.id) {
           setError("You are not authorized to edit this listing.");
         } else {
@@ -76,8 +74,7 @@ const EditPetPage = () => {
         <h1 className="text-3xl font-bold">Edit Listing for {pet?.name}</h1>
         <p className="text-neutral-500">Update the details for your pet.</p>
       </div>
-
-      {/* Now pet has all the needed fields, so this matches EditPetForm's props */}
+      
       {pet && <EditPetForm pet={pet} />}
     </div>
   );

@@ -1,4 +1,4 @@
-// src/components/pets/EditPetForm.tsx
+// frontend/src/components/pets/EditPetForm.tsx
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -6,30 +6,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import { updatePetListing, type PetFormData, type UpdatePetData } from "@/api/petAPI";
+import { updatePetListing, type Pet, type UpdatePetPayload } from "@/api/petAPI";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 
-// 1) Zod schema: make booleans .optional().default(false) so input can be undefined
 const editPetFormSchema = z.object({
   description: z.string().min(10, "Description is required."),
   age: z.coerce.number().positive().optional(),
@@ -41,11 +27,10 @@ const editPetFormSchema = z.object({
 
 type EditPetFormValues = z.infer<typeof editPetFormSchema>;
 
-export const EditPetForm = ({ pet }: { pet: PetFormData }) => {
-
+export const EditPetForm = ({ pet }: { pet: Pet }) => {
   const navigate = useNavigate();
 
-  // 2) Let RHF infer from the resolver—no manual <EditPetFormValues> generic
+  // FIX: Removed the explicit generic. The type is now inferred.
   const form = useForm({
     resolver: zodResolver(editPetFormSchema),
     defaultValues: {
@@ -55,13 +40,14 @@ export const EditPetForm = ({ pet }: { pet: PetFormData }) => {
       vaccinated: pet.health_status?.vaccinated ?? false,
       special_needs: pet.health_status?.special_needs ?? false,
       images: pet.images || [],
-    } as EditPetFormValues,
+    },
   });
 
+  // FIX: Use the inferred type for the data parameter.
   const onSubmit = async (data: EditPetFormValues) => {
     const toastId = toast.loading("Saving changes...");
     try {
-      const dataForApi: UpdatePetData = {
+      const dataForApi: UpdatePetPayload = {
         ...data,
         health_status: {
           vaccinated: data.vaccinated,
@@ -83,7 +69,7 @@ export const EditPetForm = ({ pet }: { pet: PetFormData }) => {
     <div className="rounded-lg border bg-card p-6 shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* ── Static (disabled) fields ── */}
+          {/* Static (disabled) fields */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="space-y-1">
               <Label>Name</Label>
@@ -105,7 +91,7 @@ export const EditPetForm = ({ pet }: { pet: PetFormData }) => {
 
           <Separator />
 
-          {/* ── Editable fields ── */}
+          {/* Editable fields */}
           <FormField
             control={form.control}
             name="description"
@@ -192,8 +178,6 @@ export const EditPetForm = ({ pet }: { pet: PetFormData }) => {
               </FormItem>
             )}
           />
-
-          {/* (Image uploader could go here) */}
 
           <div className="flex justify-end gap-4">
             <Button

@@ -1,22 +1,9 @@
-// src/components/pets/PetInfo.tsx
+// frontend/src/components/pets/PetInfo.tsx
 import { Badge } from '@/components/ui/badge';
 import { PawPrint, ShieldCheck, Dog, Cat, Bird, Rabbit } from 'lucide-react';
+import type { Pet } from '@/api/petAPI'; // <-- Import the canonical Pet type
 
-// Assuming a full pet type from the backend
-interface Pet 
-{
-  name: string;
-  species: string;
-  breed: string;
-  age: number;
-  gender: string;
-  description: string;
-  status: string;
-  isVaccinated: boolean;
-}
-
-const speciesIcons = 
-{
+const speciesIcons = {
   dog: <Dog className="mr-2 h-5 w-5" />,
   cat: <Cat className="mr-2 h-5 w-5" />,
   bird: <Bird className="mr-2 h-5 w-5" />,
@@ -24,8 +11,7 @@ const speciesIcons =
   other: <PawPrint className="mr-2 h-5 w-5" />,
 };
 
-export const PetInfo = ({ pet }: { pet: Pet }) => 
-{
+export const PetInfo = ({ pet }: { pet: Pet }) => { // <-- Accept the whole Pet object
   return (
     <div className="space-y-6">
       <div>
@@ -38,9 +24,9 @@ export const PetInfo = ({ pet }: { pet: Pet }) =>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">{pet.age} {pet.age === 1 ? 'year' : 'years'} old</Badge>
-        <Badge variant="secondary" className="capitalize">{pet.gender}</Badge>
-        {pet.isVaccinated && (
+        {pet.age && <Badge variant="secondary">{pet.age} {pet.age === 1 ? 'year' : 'years'} old</Badge>}
+        {pet.gender && <Badge variant="secondary" className="capitalize">{pet.gender}</Badge>}
+        {pet.health_status?.vaccinated && ( // <-- Safely access nested property
           <Badge variant="outline" className="border-green-600 bg-green-50 text-green-700">
             <ShieldCheck className="mr-1 h-3 w-3" /> Vaccinated
           </Badge>

@@ -1,4 +1,4 @@
-// src/components/pets/ListPetForm.tsx
+// frontend/src/components/pets/ListPetForm.tsx
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -8,97 +8,71 @@ import toast from "react-hot-toast";
 import { isAxiosError } from "axios";
 import type { SubmitHandler } from "react-hook-form";
 
-import { createPetListing } from "@/api/petAPI";
+import { createPetListing, type CreatePetPayload } from "@/api/petAPI";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { FormLabelWithIndicator } from "@/components/ui/form-label-with-indicator";
 
-// ────────────────────────────────────────────────────────────────────────────
-// 1) Validation schema
-// ────────────────────────────────────────────────────────────────────────────
 const petFormSchema = z.object({
   name: z.string().min(2, "Name is required and must be at least 2 characters."),
-  species: z.enum(["dog", "cat", "rabbit", "bird", "other"], {
-    required_error: "Please select a species.",
-  }),
+  species: z.enum(["dog", "cat", "rabbit", "bird", "other"], { required_error: "Please select a species." }),
   description: z.string().min(10, "Description is required and must be at least 10 characters."),
   adoption_fee: z.coerce.number().min(0, "Adoption fee is required."),
   city: z.string().min(2, "City is required."),
   country: z.string().min(2, "Country is required."),
   images: z.array(z.string()).optional(),
-
   breed: z.string().optional(),
   age: z.coerce.number().positive().optional(),
   gender: z.enum(["male", "female"]).optional(),
   height: z.coerce.number().positive().optional(),
   weight: z.coerce.number().positive().optional(),
-
-  // <— Fix boolean/undefined mismatch by making it optional on input, default on output:
   vaccinated: z.boolean().optional().default(false),
   special_needs: z.boolean().optional().default(false),
-
   state: z.string().optional(),
   status: z.enum(["available", "pending", "adopted"]),
 });
 
+// This type is still useful for reference if needed elsewhere
 type PetFormValues = z.infer<typeof petFormSchema>;
 
-// ────────────────────────────────────────────────────────────────────────────
-// 2) Component
-// ────────────────────────────────────────────────────────────────────────────
 export const ListPetForm = () => {
   const navigate = useNavigate();
 
-  const form = useForm<PetFormValues>({
+  // FIX: Removed the explicit <PetFormValues> generic.
+  // The form's type is now correctly inferred from the resolver.
+  const form = useForm({
     resolver: zodResolver(petFormSchema),
     defaultValues: {
       name: "",
-      species: undefined, // placeholder
+      species: undefined,
       description: "",
       adoption_fee: 0,
       city: "",
       country: "",
       images: [],
-
       breed: "",
       age: undefined,
       gender: undefined,
       height: undefined,
       weight: undefined,
-
-      // these now match schema: always boolean out, optional in
       vaccinated: false,
       special_needs: false,
-
       state: "",
       status: "available",
     },
   });
 
+  // FIX: Use the inferred type from the schema for complete type safety.
   const onSubmit: SubmitHandler<PetFormValues> = async (data) => {
     const toastId = toast.loading("Submitting your listing...");
     try {
-      const petDataForApi = {
+      const petDataForApi: CreatePetPayload = {
         name: data.name,
         species: data.species,
         description: data.description,
@@ -107,8 +81,14 @@ export const ListPetForm = () => {
         breed: data.breed,
         age: data.age,
         gender: data.gender,
-        vaccinated: data.vaccinated,
-        special_needs: data.special_needs,
+        health_status: {
+          vaccinated: data.vaccinated,
+          special_needs: data.special_needs,
+        },
+        size: {
+          height: data.height,
+          weight: data.weight,
+        },
         status: data.status,
         location: {
           city: data.city,
@@ -134,7 +114,7 @@ export const ListPetForm = () => {
     <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Pet Details */}
+          {/* The rest of the form JSX remains unchanged... */}
           <div className="space-y-6">
             <FormField control={form.control} name="name" render={({ field }) => (
               <FormItem>
@@ -143,21 +123,15 @@ export const ListPetForm = () => {
                 <FormMessage />
               </FormItem>
             )} />
-
             <FormField control={form.control} name="description" render={({ field }) => (
               <FormItem>
                 <FormLabelWithIndicator required>Description</FormLabelWithIndicator>
                 <FormControl>
-                  <Textarea
-                    placeholder="Tell us about your pet's personality..."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
+                  <Textarea placeholder="Tell us about your pet's personality..." className="min-h-[100px]" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
-
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <FormField control={form.control} name="species" render={({ field }) => (
                 <FormItem>
@@ -175,7 +149,6 @@ export const ListPetForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <FormField control={form.control} name="breed" render={({ field }) => (
                 <FormItem>
                   <FormLabelWithIndicator>Breed (Optional)</FormLabelWithIndicator>
@@ -183,7 +156,6 @@ export const ListPetForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <FormField control={form.control} name="age" render={({ field }) => (
                 <FormItem>
                   <FormLabelWithIndicator>Age (Optional)</FormLabelWithIndicator>
@@ -191,7 +163,6 @@ export const ListPetForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <FormField control={form.control} name="gender" render={({ field }) => (
                 <FormItem>
                   <FormLabelWithIndicator>Gender (Optional)</FormLabelWithIndicator>
@@ -205,12 +176,23 @@ export const ListPetForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
+              <FormField control={form.control} name="height" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator>Height (cm, Optional)</FormLabelWithIndicator>
+                  <FormControl><Input type="number" placeholder="e.g., 55" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="weight" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator>Weight (kg, Optional)</FormLabelWithIndicator>
+                  <FormControl><Input type="number" placeholder="e.g., 25" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
           </div>
-
           <Separator />
-
-          {/* Health & Location */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <FormField control={form.control} name="city" render={({ field }) => (
               <FormItem>
@@ -219,7 +201,6 @@ export const ListPetForm = () => {
                 <FormMessage />
               </FormItem>
             )} />
-
             <FormField control={form.control} name="country" render={({ field }) => (
               <FormItem>
                 <FormLabelWithIndicator required>Country</FormLabelWithIndicator>
@@ -227,7 +208,6 @@ export const ListPetForm = () => {
                 <FormMessage />
               </FormItem>
             )} />
-
             <FormField control={form.control} name="vaccinated" render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 col-span-full">
                 <div className="space-y-0.5">
@@ -239,9 +219,7 @@ export const ListPetForm = () => {
               </FormItem>
             )} />
           </div>
-
           <Separator />
-
           <FormField control={form.control} name="adoption_fee" render={({ field }) => (
             <FormItem>
               <FormLabelWithIndicator required>Adoption Fee ($)</FormLabelWithIndicator>
@@ -250,9 +228,7 @@ export const ListPetForm = () => {
               <FormMessage />
             </FormItem>
           )} />
-
           <Separator />
-
           <FormField control={form.control} name="status" render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
@@ -267,10 +243,7 @@ export const ListPetForm = () => {
               </FormControl>
             </FormItem>
           )} />
-
           <Separator />
-
-          {/* Actions */}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
               Cancel
