@@ -18,6 +18,8 @@ import ListPetPage from "@/pages/ListPetPage";
 import MyListingsPage from "@/pages/MyListingsPage";
 import PetDetailsPage from './pages/PetDetailsPage';
 import UserSettingsPage from './pages/UserSettingsPage';
+import EditPetPage from '@/pages/EditPetPage';
+
 
 function App() 
 {
@@ -34,6 +36,7 @@ function App()
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/sell" element={<ListPetPage />} />
+          <Route path="/pets/:id/edit" element={<EditPetPage />} />
           <Route path="/my-listings" element={<MyListingsPage />} />
           <Route path="/pets/:id" element={<PetDetailsPage />} />
           <Route path="/settings" element={<UserSettingsPage />} />

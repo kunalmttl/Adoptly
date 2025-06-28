@@ -1,0 +1,33 @@
+// src/components/Header/Link/style.module.scss
+.link {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    a {
+        text-decoration: none;
+        -webkit-text-stroke: 1px rgb(0, 0, 0);
+        color: white;
+        // color: #191919;
+        font-size: 40px;
+        font-weight: 150;
+        transition: all 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    &:hover {
+        a {
+            -webkit-text-stroke: 1px rgb(0, 0, 0);
+            color: black;
+            font-weight: 320;
+            cursor: pointer;
+        }
+    }
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    left: -30px;
+}

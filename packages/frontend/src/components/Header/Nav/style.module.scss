@@ -1,0 +1,39 @@
+// src/components/Header/Nav/style.module.scss
+.menu {
+    height: 100vh;
+    background-color: white;
+    position: fixed;
+    right: 0;
+    top: 0;
+    color: black;
+    z-index: 10; // Must be lower than the burger button
+
+    .body {
+        box-sizing: border-box;
+        height: 100%;
+        padding-left: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            color: grey;
+            font-size: 3px;
+            gap: 12px;
+            margin-top: 80px;
+            margin-right: 150px;
+            align-items: center;
+
+            .header {
+                color: black;
+                border-bottom: 1px solid #999999;
+                text-transform: uppercase;
+                font-size: 8px;
+                margin-bottom: 10px;
+            }
+        }
+    }
+
+}

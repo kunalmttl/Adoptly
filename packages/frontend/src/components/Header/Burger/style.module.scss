@@ -1,0 +1,49 @@
+
+
+// src/components/Header/Burger/style.module.scss
+.button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; // This is necessary for z-index to work correctly
+    z-index: 20;
+}
+
+.burger {
+    width: 100%;
+    &::after, &::before {
+        content: "";
+        display: block;
+        height: 1px;
+        width: 40%;
+        margin: auto;
+        background-color: white;
+        position: relative;
+        transition: transform 0.3s;
+    }
+
+    &::after {
+        top: -5px;
+    }
+
+    &::before {
+        top: 5px;
+    }
+}
+
+.burgerActive {
+    &::after {
+        background-color: black; 
+        transform: rotate(45deg);
+        top: -1px;
+    }
+    &::before {
+        background-color: black; 
+        transform: rotate(-45deg);
+        top: 0px;
+    }
+}
