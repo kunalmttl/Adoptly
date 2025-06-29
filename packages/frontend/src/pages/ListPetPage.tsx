@@ -9,6 +9,23 @@ import { ImageUploader } from "@/components/pets/ImageUploader";
 
 const ListPetPage = () => {
   const { user } = useAuthStore();
+  if (!user) {
+    return (
+      <div className="container mx-auto flex items-start justify-center py-12 pt-32">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertDescription>
+            You must be logged in to list a pet. Please{" "}
+            <Link to="/login" className="font-bold underline">
+              log in
+            </Link>{" "}
+            to continue.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   // Guard Clause: If the user is not a seller, show a message.
   if (user?.profile_type !== 'seller') {
