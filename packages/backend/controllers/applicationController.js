@@ -70,3 +70,50 @@ exports.getApplicationsForPet = async (req, res) => {
     res.status(500).json({ message: 'Server error while fetching applications.' });
   }
 };
+
+
+exports.updateApplicationStatus = async (req, res) => {
+  const { applicationId } = req.params;
+  const { status } = req.body; // Expecting 'approved' or 'rejected'
+
+  // ? Validate the incoming status
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ message: 'Invalid status provided.' });
+  }
+
+  try {
+    const application = await Application.findById(applicationId).populate('pet');
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found.' });
+    }
+
+    // ! Security Check: Ensure the user updating the status is the pet owner
+    if (application.pet.listed_by.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: You are not authorized to update this application.' });
+    }
+
+    // =-= Update the application's status
+    application.status = status;
+    await application.save();
+
+    // # Core Business Logic for Approval
+    if (status === 'approved') {
+      const petId = application.pet._id;
+
+      // 1. Update the pet's status to 'adopted'
+      await Pet.findByIdAndUpdate(petId, { status: 'adopted' });
+
+      // 2. Reject all other pending applications for this pet
+      await Application.updateMany(
+        { pet: petId, status: 'pending' },
+        { $set: { status: 'rejected' } }
+      );
+    }
+
+    res.status(200).json({ message: `Application ${status} successfully.`, application });
+
+  } catch (_error) {
+    console.error("! Error updating application status:", _error);
+    res.status(500).json({ message: 'Server error while updating application status.' });
+  }
+};

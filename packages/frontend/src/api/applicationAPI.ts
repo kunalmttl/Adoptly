@@ -60,3 +60,12 @@ export const getApplicationsForPet = async (petId: string): Promise<ApplicationW
   const response = await axiosInstance.get(`/pets/${petId}/applications`);
   return response.data;
 };
+
+
+export const updateApplicationStatus = async (
+  applicationId: string,
+  status: 'approved' | 'rejected'
+): Promise<ApplicationWithDetails> => {
+  const response = await axiosInstance.patch(`/applications/${applicationId}`, { status });
+  return response.data;
+};
