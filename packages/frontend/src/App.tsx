@@ -1,7 +1,7 @@
 // src/App.tsx
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import CustomCursor from "@/components/common/CustomCursor";
 
 // Import Layouts
@@ -20,13 +20,14 @@ import PetDetailsPage from './pages/PetDetailsPage';
 import UserSettingsPage from './pages/UserSettingsPage';
 import EditPetPage from '@/pages/EditPetPage';
 import ApplyForAdoptionPage from './pages/ApplyForAdoptionPage';
+import MyApplicationsPage from './pages/MyApplicationsPage';
 
 
 function App() 
 {
   return (
     <Router>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" richColors />
       <CustomCursor />
       <Routes>
 
@@ -42,6 +43,7 @@ function App()
           <Route path="/pets/:id" element={<PetDetailsPage />} />
           <Route path="/settings" element={<UserSettingsPage />} />
           <Route path="/apply/:id" element={<ApplyForAdoptionPage />} />
+          <Route path="/my-applications" element={<MyApplicationsPage />} />
         </Route>
 
         {/* --- Route Group 2: Main App Layout --- */}

@@ -25,8 +25,7 @@ const dbConnection = require('./config/mongoose-connection');
 const authRouter = require('./routes/authRouter');
 const usersRouter = require('./routes/usersRouter');
 const petsRouter = require('./routes/petsRouter');
-
-
+const applicationRouter = require('./routes/applicationRouter');
 //  --- App Initialization ---
 
 const app = express();
@@ -76,12 +75,14 @@ app.get("/api/v1", (req, res) =>
 
 // =-= All authentication-related routes are under `/api/v1/auth`
 app.use("/api/v1/auth", authRouter);
+app.use('/api/v1/applications', applicationRouter);
 
 // =-= All user data-related routes are under `/api/v1/users`
 app.use("/api/v1/users", usersRouter);
 
 // =-= All pet-related routes are under `/api/v1/pets`
 app.use("/api/v1/pets", petsRouter);
+
 
 
 
