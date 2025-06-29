@@ -27,7 +27,7 @@ export const PetActions = ({ petOwnerId, petId }: PetActionsProps) =>
             </Button>
           </Link>
           <Link to={`/pets/${petId}/applications`}>
-            <Button size="lg" className="mt-2 w-full">
+            <Button size="lg" variant="outline" className="w-full">
               <Notebook className="mr-2 h-4 w-4" /> View Applications
             </Button>
           </Link>

@@ -11,6 +11,8 @@ const {
   getMyListedPets 
 } = require('../controllers/petController');
 const isLoggedIn = require('../middlewares/isLoggedIn');
+const { getApplicationsForPet } = require('../controllers/applicationController');
+
 
 // #####################################################################
 // #                            Public Routes                          #
@@ -28,9 +30,11 @@ router.use(isLoggedIn);
 
 // Specific routes before dynamic ones
 router.get('/me/my-listings', getMyListedPets); // Using a more RESTful path
-router.post('/', createPet);
+router.get('/:petId/applications', getApplicationsForPet);
+
 
 // Dynamic routes last
+router.post('/', createPet);
 router.put('/:id', updatePet);
 router.delete('/:id', deletePet);
 

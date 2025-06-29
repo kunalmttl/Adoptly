@@ -47,3 +47,26 @@ exports.getMyApplications = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch applications', error: error.message });
   }
 };
+
+
+exports.getApplicationsForPet = async (req, res) => {
+  try {
+    const { petId } = req.params;
+    const pet = await Pet.findById(petId);
+
+    // ! Security Check: Ensure the person requesting is the one who listed the pet.
+    if (!pet || pet.listed_by.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden: You are not the owner of this pet.' });
+    }
+
+    const applications = await Application.find({ pet: petId })
+      // =-= Populate the applicant's details. Select only the necessary fields.
+      .populate('applicant', 'name email contact picture')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(applications);
+  } catch (_error) {
+    console.error("Error fetching applications for pet:", _error);
+    res.status(500).json({ message: 'Server error while fetching applications.' });
+  }
+};
