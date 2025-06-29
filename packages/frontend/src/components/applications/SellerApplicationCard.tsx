@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Phone, Check, X } from "lucide-react";
 import type { ApplicationWithDetails } from "@/api/applicationAPI";
+import { Link } from "react-router-dom";
 
 interface SellerApplicationCardProps {
   application: ApplicationWithDetails;
@@ -81,14 +82,19 @@ export const SellerApplicationCard = ({ application, onApprove, onReject }: Sell
       </CardContent>
 
       <CardFooter className="bg-neutral-50 p-4 flex justify-end gap-2">
-        <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700" onClick={() => onReject(application._id)}>
-          <X className="mr-2 h-4 w-4" />
-          Reject
-        </Button>
-        <Button variant="outline" size="sm" className="text-green-600 border-green-300 hover:bg-green-50 hover:text-green-700" onClick={() => onApprove(application._id)}>
-          <Check className="mr-2 h-4 w-4" />
-          Approve
-        </Button>
+        <Link to="/contact-user" state={{ recipient: application.applicant, petName: application.pet.name }}>
+            <Button variant="ghost" size="sm">Contact Adopter</Button>
+        </Link>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700" onClick={() => onReject(application._id)}>
+            <X className="mr-2 h-4 w-4" />
+            Reject
+          </Button>
+          <Button variant="outline" size="sm" className="text-green-600 border-green-300 hover:bg-green-50 hover:text-green-700" onClick={() => onApprove(application._id)}>
+            <Check className="mr-2 h-4 w-4" />
+            Approve
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

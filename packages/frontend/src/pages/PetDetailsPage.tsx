@@ -43,7 +43,7 @@ const PetDetailsPage = () => {
           <PetImageGallery images={pet.images} petName={pet.name} />
           <div>
             <PetInfo pet={pet} /> {/* <-- Pass the whole pet object */}
-            <PetActions petOwnerId={pet.listed_by._id} petId={pet._id} />
+            <PetActions owner={pet.listed_by} petId={pet._id} petName={pet.name} />
           </div>
         </div>
       </div>

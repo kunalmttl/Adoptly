@@ -27,7 +27,7 @@ const usersRouter = require('./routes/usersRouter');
 const petsRouter = require('./routes/petsRouter');
 const applicationRouter = require('./routes/applicationRouter');
 const uploadRouter = require('./routes/uploadRouter'); 
-
+const contactRouter = require('./routes/contactRouter');
 
 //  --- App Initialization ---
 
@@ -80,7 +80,7 @@ app.get("/api/v1", (req, res) =>
 app.use("/api/v1/auth", authRouter);
 app.use('/api/v1/applications', applicationRouter);
 app.use('/api/v1/upload', uploadRouter); 
-
+app.use('/api/v1/contact', contactRouter);
 
 // =-= All user data-related routes are under `/api/v1/users`
 app.use("/api/v1/users", usersRouter);

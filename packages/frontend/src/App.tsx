@@ -24,6 +24,8 @@ import ApplyForAdoptionPage from './pages/ApplyForAdoptionPage';
 import MyApplicationsPage from './pages/MyApplicationsPage';
 import ViewApplicationsPage from './pages/ViewApplicationsPage'; 
 import NotFoundPage from './pages/NotFoundPage'; 
+import ContactUserPage from './pages/ContactUserPage';
+
 
 function App() {
   return (
@@ -55,6 +57,7 @@ function App() {
           <Route path="/settings" element={<UserSettingsPage />} />
           <Route path="/apply/:id" element={<ApplyForAdoptionPage />} />
           <Route path="/my-applications" element={<MyApplicationsPage />} />
+          <Route path="/contact-user" element={<ContactUserPage />} /> 
         </Route>
         
         {/* --- Catch-all 404 Route --- */}

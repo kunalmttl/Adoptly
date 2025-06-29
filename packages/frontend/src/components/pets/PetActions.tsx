@@ -3,17 +3,20 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Pencil, MessageSquare, Notebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import type { PetOwner } from '@/api/petAPI'; 
+
 
 interface PetActionsProps 
 {
-  petOwnerId: string;
+  owner: PetOwner;
   petId: string;
+  petName: string;
 }
 
-export const PetActions = ({ petOwnerId, petId }: PetActionsProps) => 
+export const PetActions = ({ owner, petId, petName }: PetActionsProps) => 
 {
   const { user } = useAuthStore();
-  const isOwner = user?.id === petOwnerId;
+  const isOwner = user?.id === owner._id;
 
   return (
     <div className="mt-8 pt-8 border-t">
@@ -41,9 +44,11 @@ export const PetActions = ({ petOwnerId, petId }: PetActionsProps) =>
               Apply for Adoption
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="w-full">
-            <MessageSquare className="mr-2 h-4 w-4" /> Contact Seller
-          </Button>
+          <Link to="/contact-user" state={{ recipient: owner, petName: petName }}>
+            <Button size="lg" variant="outline" className="w-full">
+              <MessageSquare className="mr-2 h-4 w-4" /> Contact Seller
+            </Button>
+          </Link>
         </div>
       )}
     </div>
