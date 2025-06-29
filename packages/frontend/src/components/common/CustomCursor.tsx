@@ -1,54 +1,66 @@
-// src/components/common/CustomCursor.tsx
+// # Custom Cursor Component (Refactored for Performance)
+
 import { useRef, useEffect } from "react";
-import gsap from "gsap"; // <-- Import GSAP
+import gsap from "gsap";
 import { useCursor } from "@/context/CursorContext"; 
 
-const CustomCursor = () => 
-{
-  const cursorRef = useRef(null);
-  const { variant } = useCursor(); 
+export default function CustomCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  // * Use a ref to store the mouse position. This avoids re-renders on every mouse move.
+  const mousePosition = useRef({ x: 0, y: 0 });
+  const { variant } = useCursor();
 
-
-  useEffect(() => 
-  {
-    // This function will be called whenever the mouse moves
-    const onMouseMove = (e: MouseEvent) => 
-    {
-      const { clientX, clientY } = e;
-      
-      // Use GSAP to smoothly animate the cursor to the mouse position
-      gsap.to(cursorRef.current,   
-      {
-        x: clientX,
-        y: clientY,
-        duration: 0.4, // Controls the "lag" or smoothness
-        ease: "power3.out", // A nice easing function
-      });
+  useEffect(() => {
+    // # Event listener to update the stored mouse position
+    const onMouseMove = (e: MouseEvent) => {
+      mousePosition.current = { x: e.clientX, y: e.clientY };
     };
 
-    // Add the event listener when the component mounts
-    window.addEventListener("mousemove", onMouseMove);
+    // # GSAP ticker function for smooth animation
+    // =-= This function runs on every animation frame, managed by GSAP.
+    const updateCursor = () => {
+      if (cursorRef.current) {
+        gsap.to(cursorRef.current, {
+          x: mousePosition.current.x,
+          y: mousePosition.current.y,
+          duration: 0.4, // Controls the "lag" or smoothness
+          ease: "power3.out",
+        });
+      }
+    };
 
-    // Cleanup: Remove the event listener when the component unmounts
-    return () => 
-    {
+    // * Set initial state to be invisible and centered
+    gsap.set(cursorRef.current, { xPercent: -50, yPercent: -50, scale: 0, opacity: 0 });
+
+    // * Fade in the cursor on the first mouse move
+    const onFirstMove = () => {
+        gsap.to(cursorRef.current, { scale: 1, opacity: 1, duration: 0.5, ease: "power3.out" });
+        window.removeEventListener('mousemove', onFirstMove); // ? Remove this listener after it runs once
+    };
+
+    // # Add event listeners
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener('mousemove', onFirstMove);
+    gsap.ticker.add(updateCursor);
+
+    // ! Cleanup function is crucial to prevent memory leaks
+    return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener('mousemove', onFirstMove);
+      gsap.ticker.remove(updateCursor);
     };
   }, []);
 
-
-  useEffect(() => 
-  {
+  // # Effect to handle variant changes (scaling)
+  useEffect(() => {
     let newScale = 1;
     if (variant === 'text') {
       newScale = 5; 
     } else if (variant === 'hover') {
-      newScale = 3; // Let's make it 3x bigger (or any size you like)
+      newScale = 3;
     }
-
     
-    gsap.to(cursorRef.current, 
-    {
+    gsap.to(cursorRef.current, {
       scale: newScale,
       duration: 0.3,
       ease: "power3.out",
@@ -61,11 +73,9 @@ const CustomCursor = () =>
       ref={cursorRef}
       className="
         pointer-events-none fixed left-0 top-0 z-[9900] 
-        h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full 
+        h-4 w-4 rounded-full 
         bg-white mix-blend-difference
       "
     />
   );
 };
-
-export default CustomCursor;
