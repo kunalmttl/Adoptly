@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema({
         ref: "pet"
     }],
 
+    otp: String,
+    otp_expiry: Date,
+
+
     // ? --- Password Reset Fields ---
     resetToken: String,
     resetTokenExpiration: Date,

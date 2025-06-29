@@ -8,7 +8,8 @@
 
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, logoutUser } = require('../controllers/authController');
+
+const { registerUser, loginUser, logoutUser, verifyOtp } = require('../controllers/authController');
 
 
 
@@ -27,6 +28,10 @@ router.post('/register', registerUser);
 // * @desc    Authenticate user & get token
 // * @access  Public
 router.post('/login', loginUser);
+
+
+// * NEW: @route   POST /api/v1/auth/verify-otp
+router.post('/verify-otp', verifyOtp);
 
 
 // * @route   POST /api/v1/auth/logout

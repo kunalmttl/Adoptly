@@ -1,51 +1,43 @@
+// # Login Page
+
 import AuthForm, { type AuthFormValues } from "@/components/auth/AuthForm";
 import { isAxiosError } from "axios"; 
 import { loginUser } from "@/api/authAPI";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { useAuthStore } from "@/store/authStore";
-import type { User } from "@/store/authStore"; 
-
+import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore"; // * Import the auth store
+import type { User } from "@/store/authStore";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { setUser } = useAuthStore(); // * Get the setUser function from the store
 
-        const navigate = useNavigate();
-        const { setUser } = useAuthStore(); 
-
-
-        const handleLogin = async (values: AuthFormValues) => {
+  const handleLogin = async (values: AuthFormValues) => {
     try {
-      // Await the API call
-      const { user } = await loginUser(values);
-      setUser(user as User);
-      // Show a success notification
-      toast.success(`Welcome back, ${user.name}!`);
+      // ! FIX: This now returns the full LoginResponse with user and token
+      const response = await loginUser(values);
       
-      // We will set up global state here later. For now, just redirect.
+      // * Set the user in the global state
+      setUser(response.user as User);
+
+      toast.success(`Welcome back, ${response.user.name}!`);
       
-      // Redirect the user to the pet browser page
+      // * Navigate directly to the browse page
       navigate('/browse');
 
     } catch (error) {
-      // If the API call fails, show an error notification
       let errorMessage = "An unexpected error occurred. Please try again.";
-      
-      // 1. Check if the error is an Axios error
-      if (isAxiosError(error)) 
-      {
-        // 2. If it is, we can now safely access error.response
+      if (isAxiosError(error)) {
         errorMessage = error.response?.data?.message || "Login failed. Please try again.";
       }
-      
       console.error("Login failed:", error);
       toast.error(errorMessage);
     }
-  };;
+  };
 
   return (
-  <div className="flex items-center justify-center pt-20">
-          <AuthForm formtype="login" onSubmit={handleLogin} />;
-  </div>
-)};
+    <AuthForm formtype="login" onSubmit={handleLogin} />
+  );
+};
 
 export default LoginPage;

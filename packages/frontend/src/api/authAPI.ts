@@ -1,6 +1,8 @@
 // src/api/authAPI.ts
 
 import axiosInstance from './axiosInstance';
+import type { User } from '@/store/authStore';
+
 
 // Define the shape of the data for our requests
 // We can import this type from AuthForm.tsx later for consistency
@@ -9,30 +11,59 @@ interface AuthValues
     name?: string;
     email: string;
     password: string;
+    profile_type?: 'adopter' | 'seller';
+
 }
+
+
+interface OtpInitiationResponse {
+  message: string;
+  email: string;
+}
+
 
 interface LoginResponse {
   message: string;
   token: string;
-  user: { id: string; name: string; email: string; profile_type: string; };
+  user: User;
 }
 
 
-
-// Register function
-export const registerUser = async (userData: AuthValues) => 
-{
-    // The endpoint here will be appended to our baseURL from the axiosInstance
-    // Full URL: http://localhost:3000/api/v1/auth/register
+/**
+ * * Initiates the registration process by sending user details to the backend.
+ * ? On success, the backend sends an OTP to the user's email.
+ * @param userData - The user's registration details.
+ * @returns A promise that resolves with a message and the user's email.
+ */
+export const registerUser = async (userData: AuthValues): Promise<OtpInitiationResponse> => {
     const response = await axiosInstance.post('/auth/register', userData);
-    return response.data; // Returns the data from the backend (e.g., user object)
+    return response.data;
 };
 
-// Login function
-export const loginUser = async (credentials: AuthValues): Promise<LoginResponse> => 
-{
-    // Full URL: http://localhost:3000/api/v1/auth/login
+
+
+/**
+ * * Logs in a user by sending credentials to the backend.
+ * ? On success, the backend returns a JWT and the full user object.
+ * @param credentials - The user's login credentials.
+ * @returns A promise that resolves with the final login data.
+ */
+export const loginUser = async (credentials: AuthValues): Promise<LoginResponse> => {
     const response = await axiosInstance.post('/auth/login', credentials);
+    return response.data;
+};
+
+
+
+/**
+ * * NEW: Sends the user's email and OTP to the backend for verification.
+ * ? On success, the backend returns a JWT and the full user object.
+ * @param email - The user's email.
+ * @param otp - The 6-digit OTP code.
+ * @returns A promise that resolves with the final login data.
+ */
+export const verifyOtp = async (email: string, otp: string): Promise<LoginResponse> => {
+    const response = await axiosInstance.post('/auth/verify-otp', { email, otp });
     return response.data;
 };
 

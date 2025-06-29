@@ -1,21 +1,20 @@
-// src/App.tsx
+// # Main Application Router
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import CustomCursor from "@/components/common/CustomCursor";
 
-// Import Layouts
+// * Layouts
 import MinimalLayout from './layout/MinimalLayout';
 import AppLayout from './layout/AppLayout';
 import GuestLayout from './layout/GuestLayout'; 
 
-
-// Import Pages
+// * Pages
 import HomePage from "@/pages/HomePage";
 import BrowsePetsPage from "@/pages/BrowsePetsPage";
 import LoginPage from "@/pages/LoginPage";  
 import RegisterPage from "@/pages/RegisterPage";
-// import AuthLayout from './layout/AuthLayout';
+import VerifyOTPPage from './pages/VerifyOTPPage';
 import ListPetPage from "@/pages/ListPetPage";
 import MyListingsPage from "@/pages/MyListingsPage";
 import PetDetailsPage from './pages/PetDetailsPage';
@@ -26,18 +25,18 @@ import MyApplicationsPage from './pages/MyApplicationsPage';
 import ViewApplicationsPage from './pages/ViewApplicationsPage'; 
 import NotFoundPage from './pages/NotFoundPage'; 
 
-
-function App() 
-{
+function App() {
   return (
     <Router>
       <Toaster position="top-center" richColors />
       <CustomCursor />
       <Routes>
-        {/* --- Group 1: Guest-Only Routes (Login, Register) --- */}
+        {/* --- Group 1: Guest-Only Routes (Login, Register, Verify) --- */}
+        {/* ! FIX: This route group now correctly wraps all guest-only pages. */}
         <Route element={<GuestLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-otp" element={<VerifyOTPPage />} />
         </Route>
 
         {/* --- Group 2: Main App Layout (Browse Page) --- */}
@@ -45,7 +44,7 @@ function App()
           <Route path="/browse" element={<BrowsePetsPage />} />
         </Route>
 
-        {/* --- Group 3: Minimal Layout (Most Pages) --- */}
+        {/* --- Group 3: Minimal Layout (All other main pages) --- */}
         <Route element={<MinimalLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/sell" element={<ListPetPage />} />
@@ -58,7 +57,7 @@ function App()
           <Route path="/my-applications" element={<MyApplicationsPage />} />
         </Route>
         
-        {/* ! FIX: Catch-all 404 route must be the last route defined */}
+        {/* --- Catch-all 404 Route --- */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
