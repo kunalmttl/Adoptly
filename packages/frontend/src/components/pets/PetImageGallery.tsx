@@ -11,7 +11,8 @@ interface PetImageGalleryProps
 export const PetImageGallery = ({ images, petName }: PetImageGalleryProps) => 
 {
   // State to track the currently displayed main image
-  const [mainImage, setMainImage] = useState(images[0] || '/placeholder-pet.jpg');
+
+  const [mainImage, setMainImage] = useState(images[0] ? `http://localhost:3000${images[0]}` : '/placeholder-pet.jpg');
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[80px_1fr]">

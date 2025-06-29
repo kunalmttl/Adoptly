@@ -11,5 +11,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
+  server: {
+    proxy: {
+      // * When the frontend sees a request starting with '/images'...
+      '/images': {
+        // * ...forward it to the backend server.
+        target: 'http://localhost:3000',
+        // * This is necessary for the proxy to work correctly.
+        changeOrigin: true,
+      },
+    }
+  }
 })

@@ -1,22 +1,21 @@
-// frontend/src/components/pets/ListPetForm.tsx
+// # List a Pet Form (Multi-Step, Complete)
 
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { isAxiosError } from "axios";
-import type { SubmitHandler } from "react-hook-form";
+import { ArrowRight } from "lucide-react";
 
 import { createPetListing, type CreatePetPayload } from "@/api/petAPI";
-
+import { ImageUploader } from "@/components/pets/ImageUploader";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { FormLabelWithIndicator } from "@/components/ui/form-label-with-indicator";
 
 const petFormSchema = z.object({
@@ -26,26 +25,28 @@ const petFormSchema = z.object({
   adoption_fee: z.coerce.number().min(0, "Adoption fee is required."),
   city: z.string().min(2, "City is required."),
   country: z.string().min(2, "Country is required."),
-  images: z.array(z.string()).optional(),
+  images: z.array(z.string()).min(1, "At least one image is required."),
   breed: z.string().optional(),
   age: z.coerce.number().positive().optional(),
   gender: z.enum(["male", "female"]).optional(),
   height: z.coerce.number().positive().optional(),
   weight: z.coerce.number().positive().optional(),
-  vaccinated: z.boolean().optional().default(false),
-  special_needs: z.boolean().optional().default(false),
+  vaccinated: z.boolean().default(false),
+  special_needs: z.boolean().default(false),
   state: z.string().optional(),
   status: z.enum(["available", "pending", "adopted"]),
 });
 
-// This type is still useful for reference if needed elsewhere
 type PetFormValues = z.infer<typeof petFormSchema>;
 
-export const ListPetForm = () => {
+interface ListPetFormProps {
+  currentStep: number;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const ListPetForm = ({ currentStep, setCurrentStep }: ListPetFormProps) => {
   const navigate = useNavigate();
 
-  // FIX: Removed the explicit <PetFormValues> generic.
-  // The form's type is now correctly inferred from the resolver.
   const form = useForm({
     resolver: zodResolver(petFormSchema),
     defaultValues: {
@@ -66,9 +67,13 @@ export const ListPetForm = () => {
       state: "",
       status: "available",
     },
+    mode: 'onChange',
   });
 
-  // FIX: Use the inferred type from the schema for complete type safety.
+  const handleUploadComplete = (urls: string[]) => {
+    form.setValue('images', urls, { shouldValidate: true });
+  };
+
   const onSubmit: SubmitHandler<PetFormValues> = async (data) => {
     const toastId = toast.loading("Submitting your listing...");
     try {
@@ -110,15 +115,43 @@ export const ListPetForm = () => {
     }
   };
 
+  const handleNextStep = async () => {
+    let fieldsToValidate: (keyof PetFormValues)[] = [];
+    if (currentStep === 1) {
+      fieldsToValidate = ['name', 'description', 'images'];
+    } else if (currentStep === 2) {
+      fieldsToValidate = ['species']; // Only species is truly required in this step
+    }
+    
+    const isValid = await form.trigger(fieldsToValidate);
+    
+    if (isValid) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      toast.error("Please fill out all required fields before continuing.");
+    }
+  };
+
   return (
-    <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* The rest of the form JSX remains unchanged... */}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        
+        {/* # Step 1: Pet Information */}
+        {currentStep === 1 && (
           <div className="space-y-6">
+            <h2 className="text-xl font-poppins font-bold text-neutral-800">Pet Information</h2>
+            <FormField control={form.control} name="images" render={() => (
+              <FormItem>
+                <FormLabelWithIndicator required>Images</FormLabelWithIndicator>
+                <FormControl>
+                  <ImageUploader onUploadComplete={handleUploadComplete} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
             <FormField control={form.control} name="name" render={({ field }) => (
               <FormItem>
-                <FormLabelWithIndicator required>Pet Name</FormLabelWithIndicator>
+                <FormLabelWithIndicator required>Name</FormLabelWithIndicator>
                 <FormControl><Input placeholder="e.g., Buddy" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,16 +160,23 @@ export const ListPetForm = () => {
               <FormItem>
                 <FormLabelWithIndicator required>Description</FormLabelWithIndicator>
                 <FormControl>
-                  <Textarea placeholder="Tell us about your pet's personality..." className="min-h-[100px]" {...field} />
+                  <Textarea placeholder="Tell us about your pet's personality..." className="min-h-[120px]" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          </div>
+        )}
+
+        {/* # Step 2: Health & Details */}
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-poppins font-bold text-neutral-800">Health & Details</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <FormField control={form.control} name="species" render={({ field }) => (
                 <FormItem>
                   <FormLabelWithIndicator required>Species</FormLabelWithIndicator>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a species" /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="dog">Dog</SelectItem>
@@ -151,22 +191,22 @@ export const ListPetForm = () => {
               )} />
               <FormField control={form.control} name="breed" render={({ field }) => (
                 <FormItem>
-                  <FormLabelWithIndicator>Breed (Optional)</FormLabelWithIndicator>
+                  <FormLabelWithIndicator>Breed</FormLabelWithIndicator>
                   <FormControl><Input placeholder="e.g., Golden Retriever" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="age" render={({ field }) => (
                 <FormItem>
-                  <FormLabelWithIndicator>Age (Optional)</FormLabelWithIndicator>
+                  <FormLabelWithIndicator>Age</FormLabelWithIndicator>
                   <FormControl><Input type="number" placeholder="e.g., 3" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="gender" render={({ field }) => (
                 <FormItem>
-                  <FormLabelWithIndicator>Gender (Optional)</FormLabelWithIndicator>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabelWithIndicator>Gender</FormLabelWithIndicator>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
@@ -178,82 +218,106 @@ export const ListPetForm = () => {
               )} />
               <FormField control={form.control} name="height" render={({ field }) => (
                 <FormItem>
-                  <FormLabelWithIndicator>Height (cm, Optional)</FormLabelWithIndicator>
+                  <FormLabelWithIndicator>Height (cm)</FormLabelWithIndicator>
                   <FormControl><Input type="number" placeholder="e.g., 55" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="weight" render={({ field }) => (
                 <FormItem>
-                  <FormLabelWithIndicator>Weight (kg, Optional)</FormLabelWithIndicator>
+                  <FormLabelWithIndicator>Weight (kg)</FormLabelWithIndicator>
                   <FormControl><Input type="number" placeholder="e.g., 25" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
+              <FormField control={form.control} name="vaccinated" render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 col-span-full">
+                  <FormLabelWithIndicator>Vaccinated</FormLabelWithIndicator>
+                  <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="special_needs" render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 col-span-full">
+                  <FormLabelWithIndicator>Special Needs</FormLabelWithIndicator>
+                  <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                </FormItem>
+              )} />
             </div>
           </div>
-          <Separator />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <FormField control={form.control} name="city" render={({ field }) => (
-              <FormItem>
-                <FormLabelWithIndicator required>City</FormLabelWithIndicator>
-                <FormControl><Input placeholder="e.g., New York" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="country" render={({ field }) => (
-              <FormItem>
-                <FormLabelWithIndicator required>Country</FormLabelWithIndicator>
-                <FormControl><Input placeholder="e.g., USA" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="vaccinated" render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 col-span-full">
-                <div className="space-y-0.5">
-                  <FormLabelWithIndicator>Vaccinated (Optional)</FormLabelWithIndicator>
-                </div>
-                <FormControl>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )} />
+        )}
+
+        {/* # Step 3: Location & Fee */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-poppins font-bold text-neutral-800">Location & Final Details</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <FormField control={form.control} name="city" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator required>City</FormLabelWithIndicator>
+                  <FormControl><Input placeholder="e.g., New York" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="state" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator>State</FormLabelWithIndicator>
+                  <FormControl><Input placeholder="e.g., NY" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="country" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator required>Country</FormLabelWithIndicator>
+                  <FormControl><Input placeholder="e.g., USA" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="adoption_fee" render={({ field }) => (
+                <FormItem>
+                  <FormLabelWithIndicator required>Adoption Fee ($)</FormLabelWithIndicator>
+                  <FormControl><Input type="number" placeholder="e.g., 50" {...field} /></FormControl>
+                  <FormDescription>Enter 0 for free adoption.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-full">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Listing Active</FormLabel>
+                    <FormDescription>Make this listing visible to all adopters.</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value === "available"} onCheckedChange={(checked) => field.onChange(checked ? "available" : "pending")} />
+                  </FormControl>
+                </FormItem>
+              )} />
+            </div>
           </div>
-          <Separator />
-          <FormField control={form.control} name="adoption_fee" render={({ field }) => (
-            <FormItem>
-              <FormLabelWithIndicator required>Adoption Fee ($)</FormLabelWithIndicator>
-              <FormControl><Input type="number" placeholder="e.g., 50" {...field} /></FormControl>
-              <FormDescription>Enter 0 for free adoption.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )} />
-          <Separator />
-          <FormField control={form.control} name="status" render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Listing Active</FormLabel>
-                <FormDescription>Make this listing visible to all adopters on the site.</FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value === "available"}
-                  onCheckedChange={(checked) => field.onChange(checked ? "available" : "pending")}
-                />
-              </FormControl>
-            </FormItem>
-          )} />
-          <Separator />
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
-              Cancel
-            </Button>
-            <Button type="submit" size="lg">
-              Save Listing
-            </Button>
+        )}
+
+        {/* # Action Buttons */}
+        <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
+          <div>
+            {currentStep > 1 && (
+              <Button type="button" variant="ghost" onClick={() => setCurrentStep(prev => prev - 1)} className="font-montserrat text-neutral-600">
+                Back
+              </Button>
+            )}
           </div>
-        </form>
-      </Form>
-    </div>
+          <div>
+            {currentStep < 3 && (
+              <Button type="button" size="lg" onClick={handleNextStep} className="font-montserrat group">
+                Continue <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            )}
+            {currentStep === 3 && (
+              <Button type="submit" size="lg" className="font-montserrat bg-limegreen hover:bg-limegreen/90">
+                Save Listing
+              </Button>
+            )}
+          </div>
+        </div>
+      </form>
+    </Form>
   );
 };

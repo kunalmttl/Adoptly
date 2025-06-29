@@ -1,38 +1,56 @@
-// src/components/pets/ImageUploader.tsx
+// # Image Uploader Component
 
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { UploadCloud, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { UploadCloud, X, Loader2 } from 'lucide-react';
+
+import { uploadImages } from '@/api/uploadAPI';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
-
-// Define the shape of the file object with a preview URL
-interface FileWithPreview extends File 
-{
-  preview: string;
+// * Define the props for communication with the parent form
+interface ImageUploaderProps {
+  onUploadComplete: (urls: string[]) => void;
 }
 
-export const ImageUploader = () => 
-{
-  // We will manage the uploaded files in this component's state
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+export const ImageUploader = ({ onUploadComplete }: ImageUploaderProps) => {
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Add a 'preview' URL to each file so we can display it
-    const filesWithPreview = acceptedFiles.map(file => Object.assign(file, {
-      preview: URL.createObjectURL(file)
-    }));
-    setFiles(prevFiles => [...prevFiles, ...filesWithPreview]);
-  }, []);
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+
+    setIsUploading(true);
+    const uploadPromise = uploadImages(acceptedFiles);
+
+    toast.promise(uploadPromise, {
+      loading: 'Uploading images...',
+      success: (data) => {
+        const newUrls = [...uploadedUrls, ...data.urls];
+        setUploadedUrls(newUrls);
+        onUploadComplete(newUrls); // =-= Communicate the full list of URLs to the parent
+        setIsUploading(false);
+        return `${acceptedFiles.length} image(s) uploaded successfully!`;
+      },
+      error: (_error) => {
+        setIsUploading(false);
+        console.log(_error);
+        return 'Upload failed. Please try again.';
+      },
+    });
+  }, [uploadedUrls, onUploadComplete]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] }, // Accept all image types
+    accept: { 'image/*': [] },
     maxFiles: 5,
+    disabled: isUploading, // ? Disable dropzone while an upload is in progress
   });
 
-  const removeFile = (fileName: string) => {
-    setFiles(files.filter(file => file.name !== fileName));
+  const removeImage = (urlToRemove: string) => {
+    const newUrls = uploadedUrls.filter(url => url !== urlToRemove);
+    setUploadedUrls(newUrls);
+    onUploadComplete(newUrls); // =-= Update the parent form
   };
 
   return (
@@ -42,31 +60,30 @@ export const ImageUploader = () =>
         <CardDescription>Upload at least one main image and up to four others.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Main Dropzone */}
         <div 
           {...getRootProps()} 
-          className={`
-            flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed 
-            p-8 text-center transition-colors 
-            ${isDragActive ? 'border-indigo-600 bg-indigo-50' : 'border-neutral-300 hover:border-neutral-400'}
-          `}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${isDragActive ? 'border-indigo-600 bg-indigo-50' : 'border-neutral-300 hover:border-neutral-400'} ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}
         >
           <input {...getInputProps()} />
-          <UploadCloud className="h-12 w-12 text-neutral-400" />
+          {isUploading ? (
+            <Loader2 className="h-12 w-12 animate-spin text-neutral-400" />
+          ) : (
+            <UploadCloud className="h-12 w-12 text-neutral-400" />
+          )}
           <p className="mt-4 font-semibold">
-            {isDragActive ? 'Drop the files here...' : 'Drag & drop files here, or click to browse'}
+            {isUploading ? 'Uploading...' : isDragActive ? 'Drop the files here...' : 'Drag & drop files, or click to browse'}
           </p>
           <p className="text-xs text-neutral-500">PNG, JPG, WEBP up to 10MB</p>
         </div>
 
-        {/* Image Previews */}
-        {files.length > 0 && (
+        {uploadedUrls.length > 0 && (
           <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
-            {files.map((file, index) => (
+            {uploadedUrls.map((url, index) => (
               <div key={index} className="relative aspect-square overflow-hidden rounded-lg">
-                <img src={file.preview} alt={`Preview ${index}`} className="h-full w-full object-cover" />
+                <img src={`http://localhost:3000${url}`} alt={`Preview ${index}`} className="h-full w-full object-cover" />
                 <button 
-                  onClick={() => removeFile(file.name)}
+                  type="button"
+                  onClick={() => removeImage(url)}
                   className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/50 text-white flex items-center justify-center transition-colors hover:bg-red-500"
                 >
                   <X size={16} />
