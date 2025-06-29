@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { getMyApplications, type ApplicationWithPet } from "@/api/applicationAPI";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertTriangle, Loader2, NotebookPen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ApplicationCard } from "@/components/applications/ApplicationCard"; 
+
 
 export default function MyApplicationsPage() {
   const [applications, setApplications] = useState<ApplicationWithPet[]>([]);
@@ -30,18 +29,6 @@ export default function MyApplicationsPage() {
     fetchApplications();
   }, []);
 
-  // * Helper to get badge color based on status
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-      case 'approved':
-        return 'default'; // Greenish in shadcn default
-      case 'rejected':
-        return 'destructive'; // Red
-      case 'pending':
-      default:
-        return 'secondary'; // Grey
-    }
-  };
 
   // # 1. Loading State
   if (isLoading) {
@@ -84,22 +71,9 @@ export default function MyApplicationsPage() {
         </div>
       ) : (
         <div className="space-y-4">
+          {/* =-= Use the new ApplicationCard component for a cleaner layout */}
           {applications.map((app) => (
-            <Card key={app._id} className="flex items-center p-4">
-              <CardContent className="flex flex-grow items-center gap-4 p-0">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={app.pet.images[0]} alt={app.pet.name} />
-                  <AvatarFallback>{app.pet.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-grow">
-                  <CardTitle className="text-lg">{app.pet.name}</CardTitle>
-                  <p className="text-sm text-neutral-500">Applied on: {new Date(app.createdAt).toLocaleDateString()}</p>
-                </div>
-                <Badge variant={getStatusBadgeVariant(app.status)} className="capitalize">
-                  {app.status}
-                </Badge>
-              </CardContent>
-            </Card>
+            <ApplicationCard key={app._id} application={app} />
           ))}
         </div>
       )}

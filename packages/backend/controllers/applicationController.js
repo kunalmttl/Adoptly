@@ -32,9 +32,17 @@ exports.createApplication = async (req, res) => {
 // * Fetch all applications by user (adopter)
 exports.getMyApplications = async (req, res) => {
   try {
-    const applications = await Application.find({ applicant: req.user._id }).populate('pet');
-    res.json(applications);
+    const applications = await Application.find({ applicant: req.user._id })
+      .populate({
+        path: 'pet', // =-= First, populate the 'pet' field on the Application schema.
+        populate: {
+          path: 'listed_by', // =-= Then, within the populated pet, populate its 'listed_by' field.
+          select: 'name' // ? We only need the owner's name for now.
+        }
+      })
+      .sort({ createdAt: -1 }); // * Sort by newest first.
 
+    res.json(applications);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch applications', error: error.message });
   }
