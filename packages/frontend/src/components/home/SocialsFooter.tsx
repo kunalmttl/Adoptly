@@ -1,46 +1,38 @@
-// src/components/home/SocialsFooter.tsx
+// # Socials Footer with Magnetic Icons
 
-import { motion } from "framer-motion";
+import MagneticIcon from './MagneticIcon';
 import {
-    Twitter,
-    Youtube,
-    Facebook,
-    Instagram,
-    Linkedin,
-} from "lucide-react";
+  SiTwitter,
+  SiYoutube,
+  SiFacebook,
+  SiInstagram,
+  SiLinkedin,
+} from "react-icons/si";
 
-// Store social links in an array for cleaner code
 const socialLinks = [
-    { name: "Linkedin", href: "#", icon: Linkedin },
-    { name: "Youtube", href: "#", icon: Youtube },
-    { name: "Facebook", href: "#", icon: Facebook },
-    { name: "Twitter", href: "#", icon: Twitter },
-    { name: "Instagram", href: "#", icon: Instagram },
+    { name: "Linkedin", href: "#", icon: SiLinkedin },
+    { name: "Youtube", href: "#", icon: SiYoutube },
+    { name: "Facebook", href: "#", icon: SiFacebook },
+    { name: "Twitter", href: "#", icon: SiTwitter },
+    { name: "Instagram", href: "#", icon: SiInstagram },
 ];
-
 
 const SocialsFooter = () => {
     return (
-        <footer className="bg-rose-400 py-8">
-            <div className="container mx-auto px-4">
-                
-                {/* Flex container to center the icons */}
-                <div className="flex items-center justify-center space-x-6 md:space-x-8">
+        <footer className="bg-[#101010] py-8">
+            {/* ! FIX: Add 'relative' and 'isolation-isolate' to create a new stacking context. */}
+            <div className="container mx-auto px-4 relative isolation-isolate">
+                <div className="flex items-center justify-center space-x-2 md:space-x-4">
                     
-                    {/* Map over the array to render each icon */}
+                    {/* =-= The MagneticIcon components now have z-index: 10, placing them above the background */}
+                    {/* =-= The cursor will blend with the footer's background but appear *under* the icons */}
                     {socialLinks.map((social) => (
-                        <motion.a
-                                key={social.name}
-                                href={social.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={`Follow us on ${social.name}`}
-                                className="text-white"
-                                whileHover={{ scale: 1.3, y: -5 }}
-                                transition={{ type: "spring", stiffness: 300 }}
-                                >
-                                <social.icon className="h-6 w-6 sm:h-7 sm:w-7" />
-                        </motion.a>
+                        <MagneticIcon key={social.name} href={social.href}>
+                            <social.icon 
+                                aria-label={social.name}
+                                className="h-6 w-6 sm:h-7 sm:w-7 text-white transition-colors duration-300 group-hover:text-[#ff9496]" 
+                            />
+                        </MagneticIcon>
                     ))}
 
                 </div>
