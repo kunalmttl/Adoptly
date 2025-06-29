@@ -1,19 +1,20 @@
-// src/components/layout/Navbar.tsx
+// # Main Navigation Bar
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import PetSearch from "./PetSearch";
 import { useCursor } from "@/context/CursorContext"; 
 import Header from "@/components/Header"; 
-import { UserNav } from "./UserNav"; // <-- Import the new UserNav
+import { UserNav } from "./UserNav";
 import { useAuthStore } from "@/store/authStore"; 
 import { ProfileSwitcher } from "./ProfileSwitcher"; 
+import Magnetic from "@/components/common/Magnetic";
 
 interface NavbarProps {
-    layoutType?: 'fixed' | 'static'; // The '?' makes it optional
+    // =-= This prop helps distinguish between the main app layout (dark, static) and the minimal layout (transparent/white, fixed)
+    layoutType?: 'app' | 'minimal';
 }
 
 const GuestMenu = () => {
-    // Call the hook only inside the component that needs it.
     const { setVariant } = useCursor();
     return (
         <div onMouseEnter={() => setVariant('hover')} onMouseLeave={() => setVariant('default')}>
@@ -22,42 +23,57 @@ const GuestMenu = () => {
     );
 }
 
-
-const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
-
+const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
     const { user } = useAuthStore();
+    const { setVariant, setZIndex } = useCursor();
+    const location = useLocation();
 
+    const isHomePage = location.pathname === '/';
 
-    const headerClasses = layoutType === 'fixed'
-        ? 'fixed top-0 left-0 z-50 w-full' // For MinimalLayout
-        : 'relative z-50 w-full border-b bg-neutral-900'; // For AppLayout
+    // # Simplified Logic for Styling
+    // ! FIX: The position is now directly tied to the layoutType. 'minimal' is always fixed.
+    const headerClasses = layoutType === 'app'
+        ? 'relative z-50 w-full' // For AppLayout (Browse Page)
+        : 'fixed top-0 left-0 z-50 w-full'; // For MinimalLayout (Homepage, etc.)
 
-        const textColor = layoutType === 'fixed' ? 'text-white' : 'text-neutral-200';
+    // =-= Background is transparent on homepage, otherwise depends on the layout type.
+    const navBackgroundClass = isHomePage
+        ? 'bg-transparent'
+        : layoutType === 'app' ? 'bg-neutral-900 border-b' : 'bg-white shadow-sm';
 
-
-    // Dynamically set text color
+    // =-= Text color is light for transparent/dark backgrounds, dark for light backgrounds.
+    const textColor = isHomePage || layoutType === 'app' ? 'text-white' : 'text-neutral-800';
     
+    const handleLogoEnter = () => {
+        setVariant('hover');
+        setZIndex(1); 
+    };
 
-    const { setVariant } = useCursor();
-
+    const handleLogoLeave = () => {
+        setVariant('default');
+        setZIndex(9900);
+    };
 
     return (
-        <header className={headerClasses}>
+        <header className={`${headerClasses} ${navBackgroundClass} relative isolation-isolate transition-colors duration-300`}>
             <div className="container mx-auto flex h-24 items-center justify-between px-1">
-                
-                <Link onMouseEnter={() => setVariant('text')}
-            onMouseLeave={() => setVariant('default')}
+                <Magnetic>
+                    <div 
+                        onMouseEnter={handleLogoEnter}
+                        onMouseLeave={handleLogoLeave}
+                        className="relative z-10"
+                    >
+                        <Link to="/" className={`flex items-center ${textColor}`}>
+                            <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
+                        </Link>
+                    </div>
+                </Magnetic>
 
-                    to="/" 
-                    className={`flex items-center ${textColor} `}>
-                    <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto z-[9999]" />
-                    {/* <img src="/adoptlytext.svg" alt="Adoptly Text" className="ml-2 mt-3 h-25 w-auto" /> */}
-                </Link>
-
-                {layoutType === 'static' && (
-                <div className="hidden lg:flex flex-1 justify-center">
-                    <PetSearch />
-                </div>)}
+                {layoutType === 'app' && (
+                    <div className="hidden lg:flex flex-1 justify-center">
+                        <PetSearch />
+                    </div>
+                )}
 
                 <div className="flex items-center gap-4">
                     {user ? (
@@ -69,7 +85,6 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                         <GuestMenu />
                     )}
                 </div>
-                
             </div>
         </header>
     );

@@ -1,16 +1,17 @@
-// src/layout/MinimalLayout.tsx
+// # Minimal Layout (for Homepage, etc.)
 
 import Navbar from "@/components/layout/Navbar";
 import { Outlet } from "react-router-dom";
 import useSmoothScroll from "@/hooks/useSmoothScroll";
+
 const MinimalLayout = () => {
     useSmoothScroll();
   return (
     <div>
-      {/* We will add the Navbar here later */}
-      <Navbar />
+      {/* * Pass the 'minimal' layoutType to ensure the navbar is fixed and transparent on home */}
+      <Navbar layoutType="minimal" />
       <main>
-        <Outlet /> {/* This will render the page component (e.g., HomePage) */}
+        <Outlet />
       </main>
     </div>
   );
