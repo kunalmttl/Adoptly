@@ -2,6 +2,8 @@
 
 const Application = require('../models/application_model');
 const Pet = require('../models/pet_model'); 
+const { sendStatusUpdateEmail } = require('../utils/mailer');
+
 
 // * Create an adoption application
 exports.createApplication = async (req, res) => {
@@ -10,6 +12,14 @@ exports.createApplication = async (req, res) => {
     // # Expect user to be authenticated (user id in req.user._id)
     
     const applicant = req.user._id;
+    
+    const existingApplication = await Application.findOne({ pet: petId, applicant: applicant });
+
+    if (existingApplication) 
+    {
+      // ? Return a 409 Conflict status code to indicate the request cannot be processed.
+      return res.status(409).json({ message: "You have already submitted an application for this pet." });
+    }
 
     const application = new Application({
       applicant,
@@ -72,7 +82,8 @@ exports.getApplicationsForPet = async (req, res) => {
 };
 
 
-exports.updateApplicationStatus = async (req, res) => {
+exports.updateApplicationStatus = async (req, res) => 
+{
   const { applicationId } = req.params;
   const { status } = req.body; // Expecting 'approved' or 'rejected'
 
@@ -82,8 +93,13 @@ exports.updateApplicationStatus = async (req, res) => {
   }
 
   try {
-    const application = await Application.findById(applicationId).populate('pet');
-    if (!application) {
+    const application = await Application.findById(applicationId)
+      .populate('pet')
+      .populate('applicant', 'email'); 
+
+
+    if (!application) 
+    {
       return res.status(404).json({ message: 'Application not found.' });
     }
 
@@ -95,6 +111,8 @@ exports.updateApplicationStatus = async (req, res) => {
     // =-= Update the application's status
     application.status = status;
     await application.save();
+
+    await sendStatusUpdateEmail(application.applicant.email, application.pet.name, status);
 
     // # Core Business Logic for Approval
     if (status === 'approved') {

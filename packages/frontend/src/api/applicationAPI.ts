@@ -62,10 +62,18 @@ export const getApplicationsForPet = async (petId: string): Promise<ApplicationW
 };
 
 
+/**
+ * * NEW: Sends a request to update an application's status.
+ * @param applicationId - The ID of the application to update.
+ * @param status - The new status ('approved' or 'rejected').
+ * @returns A promise that resolves with the updated application data.
+ */
 export const updateApplicationStatus = async (
   applicationId: string,
   status: 'approved' | 'rejected'
-): Promise<ApplicationWithDetails> => {
+): Promise<ApplicationWithDetails> => 
+  {
+  // =-= The endpoint matches our new backend route
   const response = await axiosInstance.patch(`/applications/${applicationId}`, { status });
   return response.data;
 };
