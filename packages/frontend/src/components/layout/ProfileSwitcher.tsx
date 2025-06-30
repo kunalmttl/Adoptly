@@ -64,7 +64,7 @@ export function ProfileSwitcher()
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Change Profile</Button>
+        <Button className="rounded-full font-montserrat bg-black hover:bg-beige text-white" variant="outline">Change Profile</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

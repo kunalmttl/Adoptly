@@ -3,6 +3,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import CustomCursor from "@/components/common/CustomCursor";
+import ScrollToTop from '@/components/common/ScrollToTop'; 
 
 // * Layouts
 import MinimalLayout from './layout/MinimalLayout';
@@ -32,6 +33,7 @@ function App() {
     <Router>
       <Toaster position="top-center" richColors />
       <CustomCursor />
+      <ScrollToTop />
       <Routes>
         {/* --- Group 1: Guest-Only Routes (Login, Register, Verify) --- */}
         {/* ! FIX: This route group now correctly wraps all guest-only pages. */}

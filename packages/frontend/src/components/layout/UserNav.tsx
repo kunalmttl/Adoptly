@@ -37,8 +37,8 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-sm font-medium leading-none font-montserrat">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground font-mono">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         
@@ -46,7 +46,7 @@ export function UserNav() {
         
         <DropdownMenuGroup>
           <Link to="/settings">
-            <DropdownMenuItem>User Settings</DropdownMenuItem>
+            <DropdownMenuItem className="font-montserrat">User Settings</DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         
@@ -54,12 +54,12 @@ export function UserNav() {
         {user.profile_type === 'adopter' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">Adopter</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground font-poppins">Adopter</DropdownMenuLabel>
             <Link to="/my-applications">
-              <DropdownMenuItem>My Applications</DropdownMenuItem>
+              <DropdownMenuItem className="font-montserrat">My Applications</DropdownMenuItem>
             </Link>
             <Link to="/browse">
-              <DropdownMenuItem>Rehome a Pet</DropdownMenuItem>
+              <DropdownMenuItem className="font-montserrat">Rehome a Pet</DropdownMenuItem>
             </Link>
           </>
         )}
@@ -68,19 +68,19 @@ export function UserNav() {
         {user.profile_type === 'seller' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">Seller</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground font-poppins">Seller</DropdownMenuLabel>
             <Link to="/my-listings">
-              <DropdownMenuItem>My Listings</DropdownMenuItem>
+              <DropdownMenuItem className="font-montserrat">My Listings</DropdownMenuItem>
             </Link>
             <Link to="/sell">
-              <DropdownMenuItem>List A Pet</DropdownMenuItem>
+              <DropdownMenuItem className="font-montserrat">List A Pet</DropdownMenuItem>
             </Link>
           </>
         )}
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem className="font-montserrat" onClick={handleLogout}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

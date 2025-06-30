@@ -57,7 +57,10 @@ export interface PetFilters {
   gender?: string;
   vaccinated?: boolean;
   status?: string;
+  search_query?: string; // The text the user types
+  search_by?: 'name' | 'breed'; // The field to search against
 }
+
 
 export interface CreatePetPayload {
   name: string;

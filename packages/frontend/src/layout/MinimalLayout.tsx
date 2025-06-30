@@ -8,7 +8,7 @@ import { HomeHeader } from "@/components/layout/HomeHeader"; // * Import the new
 const MinimalLayout = () => {
   useSmoothScroll();
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === '/' ;
 
   return (
     <div className="bg-orange-50">

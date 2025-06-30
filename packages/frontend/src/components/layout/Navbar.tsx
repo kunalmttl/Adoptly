@@ -7,7 +7,6 @@ import Magnetic from "@/components/common/Magnetic";
 import Header from "@/components/Header"; 
 import { UserNav } from "./UserNav";
 import { ProfileSwitcher } from "./ProfileSwitcher"; 
-import PetSearch from "./PetSearch";
 
 // ? This prop is now more descriptive of its purpose.
 interface NavbarProps {
@@ -43,7 +42,7 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
     };
 
     return (
-        <header className={`${headerClasses} z-50 relative isolation-isolate`}>
+        <header className={`${headerClasses} z-50 relative isolation-isolate bg-transparent`}>
             <div className="container mx-auto flex h-24 items-center justify-between px-4">
                 
                 <Magnetic>
@@ -57,12 +56,6 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
                         </Link>
                     </div>
                 </Magnetic>
-
-                {layoutType === 'app' && (
-                    <div className="hidden lg:flex flex-1 justify-center">
-                        <PetSearch />
-                    </div>
-                )}
 
                 <div className="flex items-center gap-4">
                     {user ? (

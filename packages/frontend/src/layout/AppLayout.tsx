@@ -1,4 +1,4 @@
-// src/layout/AppLayout.tsx
+// # Main App Layout (for Browse Page)
 
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
@@ -9,17 +9,9 @@ const AppLayout = () => {
 
   return (
     <div>
-      {/* Sticky Navbar */}
-      <div className="sticky top-0 z-40">
-        <Navbar layoutType="static" />
-      </div>
-
-      {/* Main content area */}
-      <div className="container mx-auto px-4">
-        {/* The Outlet will now render our entire BrowsePetsPage,
-            which contains its own grid layout. */}
-        <Outlet />
-      </div>
+      <Navbar layoutType="app" />
+      {/* =-= The Outlet will render the full BrowsePetsPage, which now contains its own layout */}
+      <Outlet />
     </div>
   );
 };

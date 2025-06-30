@@ -40,14 +40,22 @@ exports.getAllPets = async (req, res) =>
         if (req.query.details) {
             queryObj.details = req.query.details;
         }
+
+        const { search_by, search_query } = req.query;
+        if (search_by && search_query) {
+        // =-= Use a case-insensitive regex for partial matches
+        queryObj[search_by] = { $regex: search_query, $options: 'i' };
+        }
+
         // You can add more filters here for age, vaccinated status, etc.
 
         // 3. Execute the query with the dynamically built filter object
         const pets = await Pet.find(queryObj).populate('listed_by', 'name city');
-        // ------------------------------------
-
         res.status(200).json(pets);
-    } catch (err) {
+
+    } 
+
+    catch (err) {
         console.error("Error in getAllPets:", err); // Improved logging
         res.status(500).json({ message: 'Error fetching pets.' });
     }

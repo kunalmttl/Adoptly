@@ -68,17 +68,17 @@ const PetCard = ({ id, imageUrl, name, age, isVaccinated, status , location}: Pe
           {/* Status Tags */}
           <div className="mt-4 flex flex-wrap gap-2">
             {status === 'available' && (
-              <Badge variant="outline" className="border-green-600 text-green-600">
-                <Heart className="mr-1 h-3 w-3" /> Available
+              <Badge variant="secondary" className="border-green-300 bg-green-300 text-gray-800">
+                <Heart className="mr-1 h-3 w-3 color-red-500 outline-red-500 fill-red-500" /> Available
               </Badge>
             )}
             {status === 'pending' && (
-              <Badge variant="outline" className="border-amber-600 text-amber-600">
+              <Badge variant="outline" className="border-amber-300 bg-amber-300 text-white">
                 Pending
               </Badge>
             )}
             {isVaccinated && (
-              <Badge variant="outline" className="border-blue-600 text-blue-600">
+              <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600">
                 <ShieldCheck className="mr-1 h-3 w-3" /> Vaccinated
               </Badge>
             )}
