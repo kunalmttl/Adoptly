@@ -1,6 +1,5 @@
+// # Menu Burger Styles (Corrected & Final)
 
-
-// src/components/Header/Burger/style.module.scss
 .button {
     width: 80px;
     height: 80px;
@@ -9,41 +8,56 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; // This is necessary for z-index to work correctly
-    z-index: 20;
+    position: relative;
+    // ! FIX: A very high z-index ensures it's always above the nav panel.
+    z-index: 100; 
 }
 
 .burger {
-    width: 100%;
-    &::after, &::before {
-        content: "";
-        display: block;
-        height: 1px;
-        width: 40%;
-        margin: auto;
+    width: 40%; // ? A percentage width makes it responsive to the button size
+    height: 2px; // ? This will be the height of each bar
+    position: relative; // ? This acts as the anchor for the two span lines
+
+    // =-= We style the spans directly, not pseudo-elements
+    span {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 100%; // ? The spans will be 2px high, same as the parent
         background-color: white;
-        position: relative;
-        transition: transform 0.3s;
+        border-radius: 2px;
+        transition: transform 0.3s ease-in-out, top 0.3s ease-in-out;
+        transform-origin: center;
+        
+        // ! This is the key for the color inversion.
+        // ! It will be white on dark backgrounds and black on light backgrounds.
+        mix-blend-mode: difference; 
     }
 
-    &::after {
-        top: -5px;
+    // * Position the two lines to create the hamburger icon
+    span:first-of-type {
+        top: -8px; // ? Move the first line up
     }
 
-    &::before {
-        top: 5px;
+    span:last-of-type {
+        top: 8px;  // ? Move the second line down
     }
 }
 
+// # Animation for the "X" (close) state
 .burgerActive {
-    &::after {
-        background-color: black; 
+    // =-= When active, the parent .burger div becomes transparent, hiding the original "middle" line if we had one.
+    background-color: transparent;
+
+    span:first-of-type {
+        // ! FIX: A more robust transform to create a perfect 'X'
+        top: 0;
         transform: rotate(45deg);
-        top: -1px;
     }
-    &::before {
-        background-color: black; 
+
+    span:last-of-type {
+        // ! FIX: A more robust transform to create a perfect 'X'
+        top: 0;
         transform: rotate(-45deg);
-        top: 0px;
     }
 }
