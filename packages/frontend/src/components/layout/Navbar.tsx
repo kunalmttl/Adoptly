@@ -13,11 +13,18 @@ interface NavbarProps {
     layoutType?: 'app' | 'minimal'; 
 }
 
-const GuestMenu = () => {
+import { cn } from "@/lib/utils";
+
+// ? This prop is now more descriptive of its purpose.
+interface NavbarProps {
+    layoutType?: 'app' | 'minimal'; 
+}
+
+const GuestMenu = ({ textColorClass }: { textColorClass: string }) => {
     const { setVariant } = useCursor();
     return (
         <div onMouseEnter={() => setVariant('hover')} onMouseLeave={() => setVariant('default')}>
-            <Header />
+            <Header textColorClass={textColorClass} />
         </div>
     );
 }
@@ -25,11 +32,6 @@ const GuestMenu = () => {
 const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
     const { user } = useAuthStore();
     const { setVariant, setZIndex } = useCursor();
-
-    // ! FIX: Simplified logic. No longer needs to check for homepage.
-    const headerClasses = layoutType === 'app'
-        ? 'relative w-full border-b bg-neutral-900 text-neutral-200' // For AppLayout
-        : 'fixed top-0 left-0 w-full bg-white shadow-sm text-neutral-800'; // For other MinimalLayout pages
 
     const handleLogoEnter = () => {
         setVariant('hover');
@@ -41,8 +43,15 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
         setZIndex(9900);
     };
 
+    const textColorClass = "text-neutral-800";
+
     return (
-        <header className={`${headerClasses} z-50 relative isolation-isolate bg-transparent`}>
+        <header className={cn(
+            "relative w-full z-50 isolation-isolate",
+            layoutType === 'app' ? "bg-orange-50" : "bg-transparent",
+            layoutType === 'app' ? "" : "shadow-sm", // Only apply shadow for minimal layout
+            textColorClass
+        )}>
             <div className="container mx-auto flex h-24 items-center justify-between px-4">
                 
                 <Magnetic>
@@ -51,7 +60,7 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
                         onMouseLeave={handleLogoLeave}
                         className="relative z-10"
                     >
-                        <Link to="/" className="flex items-center">
+                        <Link to="/" className={cn("flex items-center", textColorClass)}>
                             <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
                         </Link>
                     </div>
@@ -64,7 +73,7 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
                             <UserNav />
                         </>
                     ) : (
-                        <GuestMenu />
+                        <GuestMenu textColorClass={textColorClass} />
                     )}
                 </div>
             </div>

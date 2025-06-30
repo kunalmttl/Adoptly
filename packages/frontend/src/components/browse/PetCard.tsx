@@ -1,3 +1,4 @@
+import React from 'react';
 import {motion} from 'framer-motion';
 import { AspectRatio } from '../ui/aspect-ratio';
 import { Badge } from '../ui/badge';
@@ -55,7 +56,7 @@ const PetCard = ({ id, imageUrl, name, age, isVaccinated, status , location}: Pe
         {/* Image Section */}
         <div className="overflow-hidden">
           <AspectRatio ratio={1 / 1}>
-            <img src={imageUrl} alt={name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            <img src={imageUrl} alt={name} className="h-full w-full object-cover transition-transform duration-300" />
           </AspectRatio>
         </div>
       
@@ -89,4 +90,4 @@ const PetCard = ({ id, imageUrl, name, age, isVaccinated, status , location}: Pe
   );
 };
 
-export default PetCard;
+export default React.memo(PetCard);

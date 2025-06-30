@@ -7,13 +7,17 @@ import Nav from './Nav'; // We will create this next
 import MagneticButton from './MagneticButton'; 
 
 
-export default function Header() {  
+interface HeaderProps {
+    textColorClass?: string;
+}
+
+export default function Header({ textColorClass }: HeaderProps) {  
     const [isActive, setIsActive] = useState(false);
 
     return (
         <div className='relative' >
             <MagneticButton isActive={isActive}>
-                <Burger isActive={isActive} setIsActive={setIsActive} />
+                <Burger isActive={isActive} setIsActive={setIsActive} textColorClass={textColorClass} />
             </MagneticButton>
             <AnimatePresence mode="wait">
                 {isActive && <Nav />}
