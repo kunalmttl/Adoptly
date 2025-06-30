@@ -31,7 +31,6 @@ export const PetFilters = ({ setFilters }: PetFiltersProps) => {
   return (
     <aside className="h-full bg-orange-50 p-6 text-neutral-800 rounded-lg">
       <h3 className="mb-6 text-2xl font-bold">Filters</h3>
-      <div className="flex-grow overflow-y-auto">
 
       <FilterGroup title="Species">
         <RadioGroup
@@ -77,15 +76,14 @@ export const PetFilters = ({ setFilters }: PetFiltersProps) => {
           onValueChange={(value) => handleFilterChange('status', value)}
           className="space-y-2"
         >
-          {['All', 'Dog', 'Cat', 'Rabbit', 'Bird', 'Other'].map((s) => (
+          {['All', 'Available', 'Pending'].map((s) => (
             <div key={s} className="flex items-center space-x-2">
-              <RadioGroupItem value={s.toLowerCase()} id={`s-${s}`} />
-              <Label htmlFor={`s-${s}`} className="font-normal">{s}</Label>
+              <RadioGroupItem value={s.toLowerCase()} id={`status-${s}`} />
+              <Label htmlFor={`status-${s}`} className="font-normal">{s}</Label>
             </div>
           ))}
         </RadioGroup>
       </FilterGroup>
-      </div>
     </aside>
   );
 };

@@ -6,13 +6,13 @@
 
 //  ------------------ Imports ------------------
 
-import User from '../models/user_model.js';
+const User = require('../models/user_model');
 
 
 // * @desc    Get all users (for admin purposes)
 // * @route   GET /api/v1/users
 // * @access  Private/Admin
-export const getAllUsers = async (req, res) => 
+exports.getAllUsers = async (req, res) => 
 {
     try 
     {
@@ -30,7 +30,7 @@ export const getAllUsers = async (req, res) =>
 // * @desc    Get a single user by ID
 // * @route   GET /api/v1/users/:id
 // * @access  Private
-export const getUserById = async (req, res) => 
+exports.getUserById = async (req, res) => 
 {
     try 
     {
@@ -51,7 +51,7 @@ export const getUserById = async (req, res) =>
 // * @desc    Get the currently logged-in user's profile
 // * @route   GET /api/v1/users/me
 // * @access  Private
-export const getMyProfile = async (req, res) => 
+exports.getMyProfile = async (req, res) => 
 {
     // =-= The user object is attached to `req.user` by the `isLoggedIn` middleware.
     // =-= This is more secure than passing the user ID in the URL.
@@ -64,7 +64,7 @@ export const getMyProfile = async (req, res) =>
 // * @desc    Update the logged-in user's profile
 // * @route   PUT /api/v1/users/me
 // * @access  Private
-export const updateUserProfile = async (req, res) => 
+exports.updateUserProfile = async (req, res) => 
 {
     try 
     {
@@ -111,7 +111,7 @@ export const updateUserProfile = async (req, res) =>
 // * @desc    Switch the logged-in user's profile type
 // * @route   PUT /api/v1/users/me/switch-profile
 // * @access  Private
-export const switchUserProfileType = async (req, res) => {
+exports.switchUserProfileType = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         

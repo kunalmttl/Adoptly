@@ -6,7 +6,7 @@
 
 //  ------------------ Imports ------------------
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 
 // #####################################################################
@@ -95,4 +95,4 @@ const userSchema = new mongoose.Schema({
 
 
 //  Export the model. The collection in MongoDB will be named 'users'.
-export default mongoose.model('user', userSchema);
+module.exports = mongoose.model('user', userSchema);

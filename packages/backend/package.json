@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "type": "module",
   "dependencies": {
     "argon2": "^0.41.1",
     "config": "^3.3.12",

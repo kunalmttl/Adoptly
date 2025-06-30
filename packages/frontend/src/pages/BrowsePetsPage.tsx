@@ -1,5 +1,6 @@
 
-// --- Main Page Component ---
+// frontend/src/pages/BrowsePetsPage.tsx
+
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
@@ -17,14 +18,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { PetFilters } from "@/components/browse/PetFilters";
 import { PetSearch } from "@/components/layout/PetSearch";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 // --- Main Page Component ---
 const BrowsePetsPage = () => {
@@ -34,9 +27,6 @@ const BrowsePetsPage = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const petsPerPage = 9; // User requested 9 cards per page
 
   const [filters, setFilters] = useState<IPetFilters>({
     species: "all",
@@ -59,9 +49,8 @@ const BrowsePetsPage = () => {
             activeFilters[key as keyof IPetFilters] = value;
           }
         });
-        const response = await getAllPets({ ...activeFilters, page: currentPage, limit: petsPerPage });
-        setPets(response.pets);
-        setTotalPages(response.pages);
+        const petsData = await getAllPets(activeFilters);
+        setPets(petsData);
       } catch (err) {
         console.error("Failed to fetch pets:", err);
         setError("Could not load pets. Please try again later.");
@@ -69,28 +58,22 @@ const BrowsePetsPage = () => {
         setIsLoading(false);
       }
     },
-    [currentPage, petsPerPage] // Add currentPage and petsPerPage to dependencies
+    []
   );
 
   useEffect(() => {
     fetchPets(filters);
   }, [filters, fetchPets]);
 
-  const handleFilterChange = useCallback((key: keyof IPetFilters, value: string | boolean) => {
-    setCurrentPage(1); // Reset to first page on filter change
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }, [setFilters, setCurrentPage]);
-
   const handleSearchChange = useCallback(
     (searchBy: "name" | "breed", query: string) => {
-      setCurrentPage(1); // Reset to first page on search change
       setFilters((prev) => ({
         ...prev,
         search_by: searchBy,
         search_query: query,
       }));
     },
-    [setFilters, setCurrentPage] // Add setFilters and setCurrentPage to dependencies
+    []
   );
 
   // #####################################################################
@@ -109,11 +92,11 @@ const BrowsePetsPage = () => {
   // #####################################################################
   // #                           Render Logic                            #
   // #####################################################################
-  const renderContent = (currentPage: number, totalPages: number) => {
+  const renderContent = () => {
     if (isLoading) {
       return (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: petsPerPage }).map((_, index) => (
+          {Array.from({ length: 9 }).map((_, index) => (
             <PetCardSkeleton key={index} />
           ))}
         </div>
@@ -168,10 +151,10 @@ const BrowsePetsPage = () => {
 
   return (
     <div className="bg-orange-50 min-h-screen">
-      <div className="container mx-auto pt-12 px-4">
+      <div className="container mx-auto pt-24 pb-12 px-4">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filters always on the left */}
-          <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky md:top-24 h-[calc(100vh-6rem)] overflow-y-auto">
+          <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky md:top-24 h-fit">
             <PetFilters setFilters={setFilters} />
           </aside>
 
@@ -192,28 +175,7 @@ const BrowsePetsPage = () => {
             </div>
 
             {/* Pet Grid */}
-            {renderContent(currentPage, totalPages)}
-
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationPrevious onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} />
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNumber => (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink
-                          onClick={() => setCurrentPage(pageNumber)}
-                          isActive={pageNumber === currentPage}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationNext onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} />
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
+            {renderContent()}
           </main>
         </div>
       </div>

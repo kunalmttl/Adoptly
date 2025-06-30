@@ -6,14 +6,14 @@
 
 //  ------------------ Imports ------------------
 
-import express from 'express';
+const express = require('express');
 const router = express.Router();
-import { getAllUsers,
-        getUserById,
-        getMyProfile,
-        updateUserProfile,
-        switchUserProfileType } from '../controllers/userController.js';
-import isLoggedIn from '../middlewares/isLoggedIn.js';
+const { getAllUsers, 
+        getUserById, 
+        getMyProfile, 
+        updateUserProfile, 
+        switchUserProfileType } = require('../controllers/userController');
+const isLoggedIn = require('../middlewares/isLoggedIn');
 
 
 
@@ -49,4 +49,4 @@ router.get('/:id', getUserById);
 // ? router.put('/me', updateUserProfile);
 // ? router.delete('/me', deleteUserProfile);
 
-export default router;
+module.exports = router;

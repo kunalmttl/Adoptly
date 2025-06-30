@@ -6,7 +6,7 @@
 
 //  ------------------ Imports ------------------
 
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 
 
@@ -21,7 +21,7 @@ import jwt from 'jsonwebtoken';
  * @returns {string} The generated JWT string.
  */
 
-export const generateToken = (user) => 
+const generateToken = (user) => 
 {
 
     // ! CRITICAL: This MUST match the variable name in your .env file.
@@ -52,3 +52,15 @@ export const generateToken = (user) =>
         expiresIn: '1d' 
     });
 };
+
+
+
+// #####################################################################
+// #                               Export                              #
+// #####################################################################
+
+
+
+//  Export the function for use in other parts of the application (e.g., authController).
+//  Using named export for consistency.
+module.exports = { generateToken };

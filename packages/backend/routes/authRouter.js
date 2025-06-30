@@ -6,10 +6,10 @@
 
 //  ------------------ Imports ------------------
 
-import express from 'express';
+const express = require('express');
 const router = express.Router();
 
-import { registerUser, loginUser, logoutUser, verifyOtp } from '../controllers/authController.js';
+const { registerUser, loginUser, logoutUser, verifyOtp } = require('../controllers/authController');
 
 
 
@@ -41,4 +41,4 @@ router.post('/logout', logoutUser);
 
 // #####################################################################
 
-export default router;
+module.exports = router;

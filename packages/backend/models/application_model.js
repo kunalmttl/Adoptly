@@ -1,6 +1,6 @@
 // # Application (Adoption Application) Mongoose Model
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const applicationSchema = new mongoose.Schema({
   applicant: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
@@ -10,4 +10,4 @@ const applicationSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 
-export default mongoose.model('Application', applicationSchema);
+module.exports = mongoose.model('Application', applicationSchema);

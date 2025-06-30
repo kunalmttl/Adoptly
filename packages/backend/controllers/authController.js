@@ -6,11 +6,11 @@
 
 // * ------------------ Imports ------------------
 
-import argon2 from 'argon2';        //  For secure password hashing
-import jwt from 'jsonwebtoken';    //  For creating JSON Web Tokens
-import { generateToken } from '../utils/generateToken.js';    // Your custom token generation utility
-import User from '../models/user_model.js';     // User database model
-import { sendOtpEmail } from '../utils/mailer.js';
+const argon2 = require('argon2');        //  For secure password hashing
+const jwt = require('jsonwebtoken');    //  For creating JSON Web Tokens
+const { generateToken } = require('../utils/generateToken');    // Your custom token generation utility
+const UserFromDB = require('../models/user_model');     // User database model
+const { sendOtpEmail } = require('../utils/mailer');
 
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -21,7 +21,7 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
 // #####################################################################
 
 
-export const registerUser = async function (req, res) 
+module.exports.registerUser = async function (req, res) 
 {
     try {
         const { name, email, password, profile_type } = req.body;
@@ -66,7 +66,7 @@ export const registerUser = async function (req, res)
 // #####################################################################
 
 
-export const loginUser = async function (req, res) {
+module.exports.loginUser = async function (req, res) {
     try {
         const { email, password } = req.body;
         const user = await UserFromDB.findOne({ email }).select('+password');
@@ -107,7 +107,7 @@ export const loginUser = async function (req, res) {
 }
 
 
-export const verifyOtp = async function (req, res) {
+module.exports.verifyOtp = async function (req, res) {
     try {
         const { email, otp } = req.body;
         const user = await UserFromDB.findOne({ email, otp });
@@ -153,7 +153,7 @@ export const verifyOtp = async function (req, res) {
 // #####################################################################
 
 
-export const logoutUser = async function (req, res) 
+module.exports.logoutUser = async function (req, res) 
 {
     // * Clear the token cookie to log the user out.
     res.clearCookie('token');
