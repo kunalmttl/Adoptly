@@ -1,16 +1,22 @@
-// src/layout/MinimalLayout.tsx
+// # Minimal Layout (with Conditional Header)
 
-import Navbar from "@/components/layout/Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import useSmoothScroll from "@/hooks/useSmoothScroll";
+import Navbar from "@/components/layout/Navbar";
+import { HomeHeader } from "@/components/layout/HomeHeader"; // * Import the new HomeHeader
+
 const MinimalLayout = () => {
-    useSmoothScroll();
+  useSmoothScroll();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <div>
-      {/* We will add the Navbar here later */}
-      <Navbar />
+      {/* ! FIX: Conditionally render the correct header */}
+      {isHomePage ? <HomeHeader /> : <Navbar />}
+      
       <main>
-        <Outlet /> {/* This will render the page component (e.g., HomePage) */}
+        <Outlet />
       </main>
     </div>
   );

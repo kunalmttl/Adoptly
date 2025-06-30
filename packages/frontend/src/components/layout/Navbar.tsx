@@ -1,19 +1,20 @@
-// src/components/layout/Navbar.tsx
+// # Main Navigation Bar (for non-homepage routes)
 
 import { Link } from "react-router-dom";
-import PetSearch from "./PetSearch";
 import { useCursor } from "@/context/CursorContext"; 
-import Header from "@/components/Header"; 
-import { UserNav } from "./UserNav"; // <-- Import the new UserNav
 import { useAuthStore } from "@/store/authStore"; 
+import Magnetic from "@/components/common/Magnetic";
+import Header from "@/components/Header"; 
+import { UserNav } from "./UserNav";
 import { ProfileSwitcher } from "./ProfileSwitcher"; 
+import PetSearch from "./PetSearch";
 
+// ? This prop is now more descriptive of its purpose.
 interface NavbarProps {
-    layoutType?: 'fixed' | 'static'; // The '?' makes it optional
+    layoutType?: 'app' | 'minimal'; 
 }
 
 const GuestMenu = () => {
-    // Call the hook only inside the component that needs it.
     const { setVariant } = useCursor();
     return (
         <div onMouseEnter={() => setVariant('hover')} onMouseLeave={() => setVariant('default')}>
@@ -22,42 +23,46 @@ const GuestMenu = () => {
     );
 }
 
-
-const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
-
+const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
     const { user } = useAuthStore();
+    const { setVariant, setZIndex } = useCursor();
 
+    // ! FIX: Simplified logic. No longer needs to check for homepage.
+    const headerClasses = layoutType === 'app'
+        ? 'relative w-full border-b bg-neutral-900 text-neutral-200' // For AppLayout
+        : 'fixed top-0 left-0 w-full bg-white shadow-sm text-neutral-800'; // For other MinimalLayout pages
 
-    const headerClasses = layoutType === 'fixed'
-        ? 'fixed top-0 left-0 z-50 w-full' // For MinimalLayout
-        : 'relative z-50 w-full border-b bg-neutral-900'; // For AppLayout
+    const handleLogoEnter = () => {
+        setVariant('hover');
+        setZIndex(1); 
+    };
 
-        const textColor = layoutType === 'fixed' ? 'text-white' : 'text-neutral-200';
-
-
-    // Dynamically set text color
-    
-
-    const { setVariant } = useCursor();
-
+    const handleLogoLeave = () => {
+        setVariant('default');
+        setZIndex(9900);
+    };
 
     return (
-        <header className={headerClasses}>
-            <div className="container mx-auto flex h-24 items-center justify-between px-1">
+        <header className={`${headerClasses} z-50 relative isolation-isolate`}>
+            <div className="container mx-auto flex h-24 items-center justify-between px-4">
                 
-                <Link onMouseEnter={() => setVariant('text')}
-            onMouseLeave={() => setVariant('default')}
+                <Magnetic>
+                    <div 
+                        onMouseEnter={handleLogoEnter}
+                        onMouseLeave={handleLogoLeave}
+                        className="relative z-10"
+                    >
+                        <Link to="/" className="flex items-center">
+                            <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
+                        </Link>
+                    </div>
+                </Magnetic>
 
-                    to="/" 
-                    className={`flex items-center ${textColor} `}>
-                    <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto z-[9999]" />
-                    {/* <img src="/adoptlytext.svg" alt="Adoptly Text" className="ml-2 mt-3 h-25 w-auto" /> */}
-                </Link>
-
-                {layoutType === 'static' && (
-                <div className="hidden lg:flex flex-1 justify-center">
-                    <PetSearch />
-                </div>)}
+                {layoutType === 'app' && (
+                    <div className="hidden lg:flex flex-1 justify-center">
+                        <PetSearch />
+                    </div>
+                )}
 
                 <div className="flex items-center gap-4">
                     {user ? (
@@ -69,7 +74,6 @@ const Navbar = ({ layoutType = 'fixed' }: NavbarProps) => {
                         <GuestMenu />
                     )}
                 </div>
-                
             </div>
         </header>
     );

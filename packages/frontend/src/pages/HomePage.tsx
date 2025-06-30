@@ -56,14 +56,14 @@ const HomePage = () =>
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="font-poppins relative h-screen w-full overflow-hidden bg-black">
+      <section className="font-poppins h-screen w-full overflow-hidden bg-black absolute top-0">
         {/* Background Video */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute"
+          className="absolute h-full w-full object-cover"
           src="https://videos.pexels.com/video-files/3191251/3191251-uhd_2732_1440_25fps.mp4"
         />
         {/* Darkening Overlay */}
@@ -90,7 +90,7 @@ const HomePage = () =>
       </section>
 
       {/* Second Section to allow scrolling */}
-      <section className="bg-neutral-50 py-16 sm:py-24">
+      <section className="bg-neutral-50 py-16 sm:py-24 mt-[100vh]">
         <div className="container mx-auto px-4">
       
           {/* Section Header */}
