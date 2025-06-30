@@ -1,8 +1,10 @@
 // # Upload Router
 
-import express from 'express';
-const router = express.Router();
-import upload from '../utils/multer-config.js'; // * Import our multer configuration
+const express = require('express');
+const router  = express.Router();
+const upload  = require('../utils/multer-config');
+
+
 
 
 // * @route   POST /api/v1/upload
@@ -41,4 +43,4 @@ router.post('/', upload.array('petImages', 5), (req, res) =>
   }
 });
 
-export default router;
+module.exports = router;

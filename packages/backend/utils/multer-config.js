@@ -1,13 +1,9 @@
 // # Multer Configuration Utility
 
-import multer from 'multer';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+const multer = require('multer');
+const path   = require('path');
+const crypto = require('crypto');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // * Configure how files are stored
 const storage = multer.diskStorage({
@@ -26,4 +22,4 @@ const storage = multer.diskStorage({
 // * Create the Multer upload instance
 const upload = multer({ storage: storage });
 
-export default upload;
+module.exports = upload;

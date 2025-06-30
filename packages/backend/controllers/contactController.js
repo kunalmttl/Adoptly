@@ -1,12 +1,10 @@
 // # Contact Controller
 
-import User from '../models/user_model.js';
-import { sendContactEmail } from '../utils/mailer.js';
+const User              = require('../models/user_model');
+const { sendContactEmail } = require('../utils/mailer');
 
-/**
- * * Handles sending an email from the logged-in user to another user.
- */
-export const sendEmail = async (req, res) => {
+const sendEmail = async (req, res) => {
+
   try {
     const { recipientId, subject, message } = req.body;
     const sender = req.user; // Set by the isLoggedIn middleware
@@ -31,3 +29,5 @@ export const sendEmail = async (req, res) => {
     res.status(500).json({ message: 'Server error while sending message.' });
   }
 };
+
+module.exports = { sendEmail };

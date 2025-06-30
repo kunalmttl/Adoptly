@@ -1,6 +1,6 @@
 // # Nodemailer Email Utility
 
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
 // * Create a reusable transporter object using SMTP transport
 const transporter = nodemailer.createTransport({
@@ -134,4 +134,8 @@ const sendContactEmail = async (to, fromName, fromEmail, subject, message) => {
 };
 
 
-export { sendOtpEmail, sendStatusUpdateEmail, sendContactEmail };
+module.exports = {
+  sendOtpEmail,
+  sendStatusUpdateEmail,
+  sendContactEmail,
+};
