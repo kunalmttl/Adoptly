@@ -8,26 +8,32 @@
 
 //  ------------------ Imports ------------------
 
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const cors = require('cors'); 
-require('dotenv').config(); 
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import cors from 'cors'; 
+import dotenv from 'dotenv';
+dotenv.config(); 
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 //  --- Local Module Imports ---
 //  Establishes database connection as soon as the app starts
 
-const dbConnection = require('./config/mongoose-connection');
+import dbConnection from './config/mongoose-connection.js';
 
 //  --- Router Imports ---
 
-const authRouter = require('./routes/authRouter');
-const usersRouter = require('./routes/usersRouter');
-const petsRouter = require('./routes/petsRouter');
-const applicationRouter = require('./routes/applicationRouter');
-const uploadRouter = require('./routes/uploadRouter'); 
-const contactRouter = require('./routes/contactRouter');
+import authRouter from './routes/authRouter.js';
+import usersRouter from './routes/usersRouter.js';
+import petsRouter from './routes/petsRouter.js';
+import applicationRouter from './routes/applicationRouter.js';
+import uploadRouter from './routes/uploadRouter.js'; 
+import contactRouter from './routes/contactRouter.js';
 
 //  --- App Initialization ---
 

@@ -6,7 +6,7 @@
 
 //  ------------------ Imports ------------------
 
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 
 // #####################################################################
@@ -105,4 +105,4 @@ const petSchema = new mongoose.Schema({
 
 
 //  Export the model. The collection in MongoDB will be named 'pets'.
-module.exports = mongoose.model("pet", petSchema);
+export default mongoose.model("pet", petSchema);

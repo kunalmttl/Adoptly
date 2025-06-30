@@ -6,15 +6,15 @@
 
 //  ------------------ Imports ------------------
 
-const Pet = require('../models/pet_model'); 
-const User = require('../models/user_model');
+import Pet from '../models/pet_model.js'; 
+import User from '../models/user_model.js';
 
 
 // * @desc    Get all pets with filtering/sorting
 // * @route   GET /api/v1/pets
 // * @access  Public
 
-exports.getAllPets = async (req, res) => 
+export const getAllPets = async (req, res) => 
 {
     try 
     {
@@ -47,11 +47,26 @@ exports.getAllPets = async (req, res) =>
         queryObj[search_by] = { $regex: search_query, $options: 'i' };
         }
 
-        // You can add more filters here for age, vaccinated status, etc.
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 9; // Default to 9 pets per page
+        const skip = (page - 1) * limit;
 
-        // 3. Execute the query with the dynamically built filter object
-        const pets = await Pet.find(queryObj).populate('listed_by', 'name city');
-        res.status(200).json(pets);
+        // Get total count of pets matching the filters
+        const totalPets = await Pet.countDocuments(queryObj);
+
+        // Execute the query with filters, pagination, and populate
+        const pets = await Pet.find(queryObj)
+            .populate('listed_by', 'name city')
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({
+            pets,
+            totalPets,
+            page,
+            pages: Math.ceil(totalPets / limit)
+        });
 
     } 
 
@@ -66,7 +81,7 @@ exports.getAllPets = async (req, res) =>
 // * @desc    Get a single pet by ID
 // * @route   GET /api/v1/pets/:id
 // * @access  Public
-exports.getPetById = async (req, res) => 
+export const getPetById = async (req, res) => 
 {
     try 
     {
@@ -87,7 +102,7 @@ exports.getPetById = async (req, res) =>
 // * @desc    Create a new pet listing
 // * @route   POST /api/v1/pets
 // * @access  Private (Sellers only)
-exports.createPet = async (req, res) => 
+export const createPet = async (req, res) => 
 {
     // =-= Middleware should have already confirmed user is logged in.
     if (req.user.profile_type !== 'seller') 
@@ -119,7 +134,7 @@ exports.createPet = async (req, res) =>
 // * @desc    Get all pets listed by the logged-in user
 // * @route   GET /api/v1/pets/my-listings
 // * @access  Private
-exports.getMyListedPets = async (req, res) => {
+export const getMyListedPets = async (req, res) => {
     try {
         // req.user.id is attached by our `isLoggedIn` middleware
         const pets = await Pet.find({ listed_by: req.user.id }).sort({ createdAt: -1 });
@@ -134,7 +149,7 @@ exports.getMyListedPets = async (req, res) => {
 // * @desc    Update a pet listing
 // * @route   PUT /api/v1/pets/:id
 // * @access  Private (Owner only)
-exports.updatePet = async (req, res) => 
+export const updatePet = async (req, res) => 
 {
     try 
     {
@@ -168,7 +183,7 @@ exports.updatePet = async (req, res) =>
 // * @desc    Delete a pet listing
 // * @route   DELETE /api/v1/pets/:id
 // * @access  Private (Owner only)
-exports.deletePet = async (req, res) => 
+export const deletePet = async (req, res) => 
 {
     try 
     {

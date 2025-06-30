@@ -51,6 +51,13 @@ export interface Pet {
 
 // --- Filter & Payload Type Definitions ---
 
+export interface PaginatedPetsResponse {
+  pets: Pet[];
+  totalPets: number;
+  page: number;
+  pages: number;
+}
+
 export interface PetFilters {
   species?: string;
   breed?: string;
@@ -59,6 +66,8 @@ export interface PetFilters {
   status?: string;
   search_query?: string; // The text the user types
   search_by?: 'name' | 'breed'; // The field to search against
+  page?: number;
+  limit?: number;
 }
 
 
@@ -89,7 +98,7 @@ export interface UpdatePetPayload {
 
 // --- API Functions ---
 
-export const getAllPets = async (filters: PetFilters): Promise<Pet[]> => {
+export const getAllPets = async (filters: PetFilters): Promise<PaginatedPetsResponse> => {
   const response = await axiosInstance.get('/pets', { params: filters });
   return response.data;
 };

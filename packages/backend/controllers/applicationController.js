@@ -1,12 +1,12 @@
 // # Application Controller
 
-const Application = require('../models/application_model');
-const Pet = require('../models/pet_model'); 
-const { sendStatusUpdateEmail } = require('../utils/mailer');
+import Application from '../models/application_model.js';
+import Pet from '../models/pet_model.js'; 
+import { sendStatusUpdateEmail } from '../utils/mailer.js';
 
 
 // * Create an adoption application
-exports.createApplication = async (req, res) => {
+export const createApplication = async (req, res) => {
   try {
     const { petId, adoption_intent, pet_location_plan } = req.body;
     // # Expect user to be authenticated (user id in req.user._id)
@@ -40,7 +40,7 @@ exports.createApplication = async (req, res) => {
 };
 
 // * Fetch all applications by user (adopter)
-exports.getMyApplications = async (req, res) => {
+export const getMyApplications = async (req, res) => {
   try {
     const applications = await Application.find({ applicant: req.user._id })
       .populate({
@@ -59,7 +59,7 @@ exports.getMyApplications = async (req, res) => {
 };
 
 
-exports.getApplicationsForPet = async (req, res) => {
+export const getApplicationsForPet = async (req, res) => {
   try {
     const { petId } = req.params;
     const pet = await Pet.findById(petId);
@@ -82,7 +82,7 @@ exports.getApplicationsForPet = async (req, res) => {
 };
 
 
-exports.updateApplicationStatus = async (req, res) => 
+export const updateApplicationStatus = async (req, res) => 
 {
   const { applicationId } = req.params;
   const { status } = req.body; // Expecting 'approved' or 'rejected'

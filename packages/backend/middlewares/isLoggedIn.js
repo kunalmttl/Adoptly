@@ -6,8 +6,8 @@
 
 //  ------------------ Imports ------------------
 
-const jwt = require('jsonwebtoken');
-const UserFromDB = require('../models/user_model');
+import jwt from 'jsonwebtoken';
+import User from '../models/user_model.js';
 
 
 // #####################################################################
@@ -15,7 +15,7 @@ const UserFromDB = require('../models/user_model');
 // #####################################################################
 
 
-module.exports = async function (req, res, next) 
+export default async function (req, res, next) 
 {
     let token;
 
@@ -56,7 +56,7 @@ module.exports = async function (req, res, next)
 
         // * Use the ID from the decoded token to find the user in the database.
         // * .select('-password') ensures the hashed password is not attached to the request object.
-        req.user = await UserFromDB.findById(decoded.id).select('-password');
+        req.user = await User.findById(decoded.id).select('-password');
         
         //  --- Handle Deleted User Edge Case ---
 

@@ -1,17 +1,17 @@
 // packages/backend/routes/petsRouter.js
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { 
-  getAllPets, 
-  getPetById, 
-  createPet, 
-  updatePet, 
-  deletePet, 
-  getMyListedPets 
-} = require('../controllers/petController');
-const isLoggedIn = require('../middlewares/isLoggedIn');
-const { getApplicationsForPet } = require('../controllers/applicationController');
+import {
+  getAllPets,
+  getPetById,
+  createPet,
+  updatePet,
+  deletePet,
+  getMyListedPets
+} from '../controllers/petController.js';
+import isLoggedIn from '../middlewares/isLoggedIn.js';
+import { getApplicationsForPet } from '../controllers/applicationController.js';
 
 
 // #####################################################################
@@ -38,4 +38,4 @@ router.post('/', createPet);
 router.put('/:id', updatePet);
 router.delete('/:id', deletePet);
 
-module.exports = router;
+export default router;

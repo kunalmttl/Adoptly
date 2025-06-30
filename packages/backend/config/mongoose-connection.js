@@ -9,8 +9,9 @@
 
 // * ------------------ Imports ------------------
 
-const mongoose = require('mongoose');
-const dbgr = require('debug')('development:mongoose');       //  For logging connection status.
+import mongoose from 'mongoose';
+import debug from 'debug';
+const dbgr = debug('development:mongoose');       //  For logging connection status.
 
 // =-= Using an immediately-invoked async function (IIFE) to connect.*
 (async () => 
@@ -41,4 +42,4 @@ const dbgr = require('debug')('development:mongoose');       //  For logging con
 })();
 
 // * Export the Mongoose connection object for use in other parts of the application.
-module.exports = mongoose.connection;
+export default mongoose.connection;
