@@ -8,6 +8,7 @@ export interface UpdateProfileData
   name?: string;
   contact?: string;
   bio?: string;
+  picture?: string;
   address?: 
   {
     city?: string;
