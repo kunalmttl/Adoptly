@@ -23,7 +23,7 @@ const InfoCard = ({ icon, title, children }: InfoCardProps) =>
             
             <CardHeader>
                 {/* Icon with circular background */}
-                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-orange-100">
                     {icon}
                 </div>
                 <CardTitle className="text-xl font-bold">

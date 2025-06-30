@@ -11,7 +11,7 @@ const MinimalLayout = () => {
   const isHomePage = location.pathname === '/';
 
   return (
-    <div>
+    <div className="bg-orange-50">
       {/* ! FIX: Conditionally render the correct header */}
       {isHomePage ? <HomeHeader /> : <Navbar />}
       

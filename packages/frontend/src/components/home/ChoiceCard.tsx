@@ -73,7 +73,7 @@ const ChoiceCard = (
         </p>
         <div className="font-montserrat mt-8">
           <Link to={buttonLink}>
-            <Button size="lg" className="group">
+            <Button size="lg" className="group hover:bg-limegreen hover:text-gray-800">
               {buttonText}
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>

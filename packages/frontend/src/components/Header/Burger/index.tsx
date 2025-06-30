@@ -1,4 +1,4 @@
-// # Menu Burger Component
+// # Menu Burger Component (Original Working Version)
 
 import styles from './style.module.scss';
 
@@ -9,14 +9,8 @@ interface BurgerProps {
 
 export default function Burger({ isActive, setIsActive }: BurgerProps) {
     return (
-        // * The onClick handler toggles the state
         <div onClick={() => { setIsActive(!isActive) }} className={styles.button}>
-            {/* ! FIX: The icon itself, which will animate. No empty label needed. */}
-            <div className={`${styles.burger} ${isActive ? styles.burgerActive : ""}`}>
-                {/* These two spans will become the lines of the icon */}
-                <span></span>
-                <span></span>
-            </div>
+            <div className={`${styles.burger} ${isActive ? styles.burgerActive : ""}`}></div>
         </div>
     )
 }
