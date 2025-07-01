@@ -62,6 +62,17 @@ export interface PetFilters {
 }
 
 
+export interface PagedPetsResponse {
+  data: Pet[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalPets: number;
+  };
+}
+
+
+
 export interface CreatePetPayload {
   name: string;
   species: "dog" | "cat" | "rabbit" | "bird" | "other";
@@ -89,8 +100,9 @@ export interface UpdatePetPayload {
 
 // --- API Functions ---
 
-export const getAllPets = async (filters: PetFilters): Promise<Pet[]> => {
-  const response = await axiosInstance.get('/pets', { params: filters });
+export const getAllPets = async (filters: PetFilters, page : number): Promise<PagedPetsResponse> => {
+  
+  const response = await axiosInstance.get('/pets', { params: {...filters, page: page} });
   return response.data;
 };
 

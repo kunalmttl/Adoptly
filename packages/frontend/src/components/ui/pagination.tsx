@@ -2,7 +2,7 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { ButtonProps, buttonVariants } from "@/components/ui/button"
+import { type ButtonProps, buttonVariants } from "@/components/ui/button"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -72,7 +72,7 @@ function PaginationPrevious({
       {...props}
     >
       <ChevronLeft className="h-4 w-4" />
-      <span>Previous</span>
+      <span className="font-montserrat">Previous</span>
     </PaginationLink>
   )
 }
@@ -88,7 +88,7 @@ function PaginationNext({
       className={cn("gap-1 pr-2.5", className)}
       {...props}
     >
-      <span>Next</span>
+      <span className="font-montserrat">Next</span>
       <ChevronRight className="h-4 w-4" />
     </PaginationLink>
   )
@@ -101,7 +101,7 @@ function PaginationEllipsis({
   return (
     <span
       aria-hidden
-      className={cn("flex h-9 w-9 items-center justify-center", className)}
+      className={cn("flex h-9 w-9 items-center justify-cente", className)}
       {...props}
     >
       <MoreHorizontal className="h-4 w-4" />

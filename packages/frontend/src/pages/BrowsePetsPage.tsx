@@ -18,6 +18,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { PetFilters } from "@/components/browse/PetFilters";
 import { PetSearch } from "@/components/layout/PetSearch";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+
+
 
 // --- Main Page Component ---
 const BrowsePetsPage = () => {
@@ -27,6 +38,10 @@ const BrowsePetsPage = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
 
   const [filters, setFilters] = useState<IPetFilters>({
     species: "all",
@@ -39,7 +54,7 @@ const BrowsePetsPage = () => {
   // #                            Data Fetching                          #
   // #####################################################################
   const fetchPets = useCallback(
-    async (currentFilters: IPetFilters) => {
+    async (currentFilters: IPetFilters, page:number) => {
       setIsLoading(true);
       setError(null);
       try {
@@ -49,8 +64,10 @@ const BrowsePetsPage = () => {
             activeFilters[key as keyof IPetFilters] = value;
           }
         });
-        const petsData = await getAllPets(activeFilters);
-        setPets(petsData);
+        const petsData = await getAllPets(activeFilters, page);
+        setPets(petsData.data);
+        setTotalPages(petsData.pagination.totalPages);
+
       } catch (err) {
         console.error("Failed to fetch pets:", err);
         setError("Could not load pets. Please try again later.");
@@ -62,8 +79,14 @@ const BrowsePetsPage = () => {
   );
 
   useEffect(() => {
-    fetchPets(filters);
-  }, [filters, fetchPets]);
+    fetchPets(filters, currentPage);
+  }, [filters, currentPage, fetchPets]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0); // Scroll to top on page change
+  };
+
 
   const handleSearchChange = useCallback(
     (searchBy: "name" | "breed", query: string) => {
@@ -176,6 +199,55 @@ const BrowsePetsPage = () => {
 
             {/* Pet Grid */}
             {renderContent()}
+
+            {!isLoading && !error && totalPages > 1 && (
+              <div className="mt-12 items-center justify-around">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        size="default"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage - 1);
+                        }}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+
+                    {/* We can create more complex logic for page numbers later */}
+                    {Array.from({ length: totalPages }).map((_, index) => (
+                      <PaginationItem key={index}>
+                        <PaginationLink
+                          size="default"
+                          href="#"
+                          isActive={currentPage === index + 1}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(index + 1);
+                          }}
+                        >
+                          {index + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        size="default"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </main>
         </div>
       </div>

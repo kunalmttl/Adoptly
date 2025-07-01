@@ -18,6 +18,11 @@ exports.getAllPets = async (req, res) =>
 {
     try 
     {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 9; // Hardcode to 9 pets per page as requested
+        const skip = (page - 1) * limit;
+
+
         // 1. Start with a base query object
         const queryObj = {};
 
@@ -49,9 +54,26 @@ exports.getAllPets = async (req, res) =>
 
         // You can add more filters here for age, vaccinated status, etc.
 
+        const totalPets = await Pet.countDocuments(queryObj);
+        const totalPages = Math.ceil(totalPets / limit);
+
         // 3. Execute the query with the dynamically built filter object
-        const pets = await Pet.find(queryObj).populate('listed_by', 'name city');
-        res.status(200).json(pets);
+                const pets = await Pet.find(queryObj)
+            .sort({ createdAt: -1 }) // Sort by newest first
+            .skip(skip)
+            .limit(limit)
+            .populate('listed_by', 'name city');
+
+        res.status(200).json({
+            data: pets,
+            pagination: {
+                currentPage: page,
+                totalPages: totalPages,
+                totalPets: totalPets,
+            }
+        });
+
+
 
     } 
 
@@ -70,7 +92,7 @@ exports.getPetById = async (req, res) =>
 {
     try 
     {
-        const pet = await Pet.findById(req.params.id).populate('listed_by', 'name email contact');
+        const pet = await Pet.findById(req.params.id).populate('listed_by', '_id name email contact');
         if (!pet) 
         {
             return res.status(404).json({ message: 'Pet not found.' });
