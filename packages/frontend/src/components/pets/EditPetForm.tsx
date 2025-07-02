@@ -5,19 +5,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useState } from "react"; // Import useState
-import { X } from "lucide-react"; // Import X icon
 
-import { updatePetListing, type Pet, type UpdatePetPayload } from "@/api/petAPI";
+import { updatePetListing, deletePet, type Pet, type UpdatePetPayload } from "@/api/petAPI";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Switch } from  "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { ImageUploader } from "./ImageUploader"; // Import ImageUploader
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 
 const editPetFormSchema = z.object({
   description: z.string().min(10, "Description is required."),
@@ -25,15 +23,16 @@ const editPetFormSchema = z.object({
   status: z.enum(["available", "pending", "adopted"]),
   vaccinated: z.boolean().optional().default(false),
   special_needs: z.boolean().optional().default(false),
+  images: z.array(z.string()).optional(),
 });
 
 type EditPetFormValues = z.infer<typeof editPetFormSchema>;
 
 export const EditPetForm = ({ pet }: { pet: Pet }) => {
   const navigate = useNavigate();
-  const [images, setImages] = useState<string[]>(pet.images || []); // State for images
 
-  const form = useForm<EditPetFormValues>({
+  // FIX: Removed the explicit generic. The type is now inferred.
+  const form = useForm({
     resolver: zodResolver(editPetFormSchema),
     defaultValues: {
       description: pet.description || "",
@@ -41,9 +40,11 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
       status: pet.status,
       vaccinated: pet.health_status?.vaccinated ?? false,
       special_needs: pet.health_status?.special_needs ?? false,
+      images: pet.images || [],
     },
   });
 
+  // FIX: Use the inferred type for the data parameter.
   const onSubmit = async (data: EditPetFormValues) => {
     const toastId = toast.loading("Saving changes...");
     try {
@@ -53,7 +54,6 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
           vaccinated: data.vaccinated,
           special_needs: data.special_needs,
         },
-        images: images, // Include the updated images
       };
 
       await updatePetListing(pet._id, dataForApi);
@@ -62,17 +62,26 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
     } catch (error) {
       toast.error("Failed to update listing.", { id: toastId });
       console.log("Failed to update the pet listing:", error);
-      navigate("/my-listings");
+      navigate("/my-listings")
     }
   };
 
-  const handleDeleteImage = (imageUrl: string) => {
-    setImages(images.filter((url) => url !== imageUrl));
+  const handleDelete = async () => 
+    {
+    const toastId = toast.loading("Deleting listing...");
+    try 
+    {
+      await deletePet(pet._id);
+      toast.success("Listing deleted successfully.", { id: toastId });
+      navigate("/my-listings"); // Redirect after successful deletion
+    } 
+    catch (error) 
+    {
+      toast.error("Failed to delete listing.", { id: toastId });
+      console.error("Pet deletion failed:", error);
+    }
   };
 
-  const handleImagesUploaded = (urls: string[]) => {
-    setImages([...images, ...urls]);
-  };
 
   return (
     <div className="rounded-lg border bg-card p-6 shadow-sm">
@@ -150,8 +159,8 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-            )}
-          />
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -166,8 +175,8 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
                     />
                   </FormControl>
                 </FormItem>
-            )}
-          />
+              )}
+            />
           </div>
 
           <Separator />
@@ -187,41 +196,44 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
               </FormItem>
             )}
           />
+          <div className="flex items-center justify-between pt-4">
+            {/* Delete Button with Confirmation Dialog */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="button" variant="destructive">
+                  Delete Listing
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this pet listing from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Yes, Delete Listing
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
-          {/* Image Management Section */}
-          <div className="space-y-4">
-            <Label>Images</Label>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {images.map((url) => (
-                <div key={url} className="relative">
-                  <img src={url} alt="Pet" className="h-32 w-full rounded-md object-cover" />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute right-1 top-1 h-6 w-6"
-                    onClick={() => handleDeleteImage(url)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            {/* Save and Cancel Buttons */}
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={() => navigate(-1)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" size="lg">
+                Save Changes
+              </Button>
             </div>
-            <ImageUploader onImagesUploaded={handleImagesUploaded} />
-          </div>
-
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => navigate(-1)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" size="lg">
-              Save Changes
-            </Button>
           </div>
         </form>
       </Form>
