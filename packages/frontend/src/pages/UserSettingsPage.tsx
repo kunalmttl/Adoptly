@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getMyProfile } from "@/api/userAPI";
-import { useAuthStore, type User } from "@/store/authStore";
+import { useAuthStore } from "@/store/authStore";
 
 import { AvatarUploader } from "@/components/settings/AvatarUploader";
 import { ProfileForm } from "@/components/settings/ProfileForm";
@@ -34,12 +34,7 @@ const UserSettingsPage = () => {
     fetchProfile();
   }, []); 
 
-  const handleAvatarUpdate = (updatedUser: User & { picture?: string }) => {
-    setProfileData(prevData => ({
-      ...prevData,
-      ...updatedUser,
-    }));
-  };
+  
 
 
   // * If the essential auth user isn't loaded yet, show a full-page loader.
@@ -66,7 +61,7 @@ const UserSettingsPage = () => {
       <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
         {/* Left Column: Avatar */}
         <div className="md:col-span-1">
-          <AvatarUploader src={profileData?.picture} fallback={initials} onUploadSuccess={handleAvatarUpdate} />
+          <AvatarUploader src={authUser.picture} fallback={initials} />
         </div>
         
         {/* Right Column: Form */}

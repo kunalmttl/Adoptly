@@ -47,9 +47,9 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
 
     return (
         <header className={cn(
-            "relative w-full z-50 isolation-isolate",
+            "relative w-full z-10 isolation-isolate",
             layoutType === 'app' ? "bg-orange-50" : "bg-transparent",
-            layoutType === 'app' ? "" : "shadow-sm", // Only apply shadow for minimal layout
+            layoutType === 'app' ? "" : "", // Only apply shadow for minimal layout
             textColorClass
         )}>
             <div className="container mx-auto flex h-24 items-center justify-between px-4">
@@ -60,13 +60,13 @@ const Navbar = ({ layoutType = 'minimal' }: NavbarProps) => {
                         onMouseLeave={handleLogoLeave}
                         className="relative z-10"
                     >
-                        <Link to="/" className={cn("flex items-center", textColorClass)}>
-                            <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-10 w-auto" />
+                        <Link to="/" className={cn("flex items-center ", textColorClass)}>
+                            <img src="/adoptlySVG.svg" alt="Adoptly Logo" className="h-15 pl-7 mt-8 w-auto" />
                         </Link>
                     </div>
                 </Magnetic>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mr-10 mt-7">
                     {user ? (
                         <>
                             <ProfileSwitcher /> 

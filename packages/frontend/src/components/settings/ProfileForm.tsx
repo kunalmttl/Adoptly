@@ -67,9 +67,9 @@ export const ProfileForm = ({ defaultValues }: ProfileFormProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile Details</CardTitle>
+        <CardTitle className="font-poppins">Profile Details</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="font-montserrat">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             
@@ -140,7 +140,7 @@ export const ProfileForm = ({ defaultValues }: ProfileFormProps) => {
             <Separator />
             
             <div className="flex items-center justify-between">
-                <Button type="button" variant="destructive" onClick={handleLogout}>Log Out</Button>
+                <Button type="button" className="bg-red-400 hover:bg-red-700 font-white" onClick={handleLogout}>Log Out</Button>
                 <Button type="submit">Save Changes</Button>
             </div>
           </form>

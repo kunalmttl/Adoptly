@@ -29,8 +29,8 @@ export const PetFilters = ({ setFilters }: PetFiltersProps) => {
   };
   
   return (
-    <aside className="h-full bg-orange-50 p-6 text-neutral-800 rounded-lg">
-      <h3 className="mb-6 text-2xl font-bold">Filters</h3>
+    <aside className="h-700 bg-orange-50 px-5 text-neutral-800 rounded-lg">
+      <h3 className="mb-6 text-2xl font-bold font-poppins">Filters</h3>
 
       <FilterGroup title="Species">
         <RadioGroup

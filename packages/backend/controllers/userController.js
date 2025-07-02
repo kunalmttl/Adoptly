@@ -141,3 +141,35 @@ exports.switchUserProfileType = async (req, res) => {
         res.status(500).json({ message: 'Error switching profile type.' });
     }
 };
+
+
+// * @desc    Update the logged-in user's avatar
+// * @route   PUT /api/v1/users/me/avatar
+// * @access  Private
+exports.updateMyAvatar = async (req, res) => {
+    try {
+        // Get the new image URL from the request body
+        const { picture } = req.body;
+
+        if (!picture) {
+            return res.status(400).json({ message: 'No image URL provided.' });
+        }
+
+        // Find the user by their ID (from the token) and update only the 'picture' field
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            { picture: picture },
+            { new: true, runValidators: true } // Return the updated document
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.status(200).json(updatedUser);
+
+    } catch (err) {
+        console.error("Error updating avatar:", err);
+        res.status(500).json({ message: 'Error updating user avatar.' });
+    }
+};

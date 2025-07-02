@@ -23,14 +23,14 @@ export const PetActions = ({ owner, petId, petName }: PetActionsProps) =>
       {isOwner ? (
         // View for the pet's owner
         <div className="space-y-4">
-          <p className="font-semibold">This is your listing.</p>
+          <p className="font-semibold font-montserrat">This is your listing.</p>
           <Link to={`/pets/${petId}/edit`}>
             <Button size="lg" className="w-full">
-              <Pencil className="mr-2 h-4 w-4" /> Edit Listing
+              <Pencil className="mr-2 h-4 w-4 font-poppins" /> Edit Listing
             </Button>
           </Link>
           <Link to={`/pets/${petId}/applications`}>
-            <Button size="lg" variant="outline" className="w-full">
+            <Button size="lg" variant="outline" className="w-full font-poppins mt-3">
               <Notebook className="mr-2 h-4 w-4" /> View Applications
             </Button>
           </Link>
@@ -38,14 +38,14 @@ export const PetActions = ({ owner, petId, petName }: PetActionsProps) =>
       ) : (
         // View for potential adopters
         <div className="space-y-4">
-           <p className="font-semibold">Interested in adopting?</p>
+           <p className="font-semibold font-montserrat">Interested in adopting?</p>
           <Link to={`/apply/${petId}`}>
-            <Button size="lg" className="w-full bg-orange-500 hover:bg-orange-600">
+            <Button size="lg" className="w-full bg-orange-500 hover:bg-orange-600 font-poppins">
               Apply for Adoption
             </Button>
           </Link>
           <Link to="/contact-user" state={{ recipient: owner, petName: petName }}>
-            <Button size="lg" variant="outline" className="w-full">
+            <Button size="lg" variant="outline" className="w-full font-poppins mt-3">
               <MessageSquare className="mr-2 h-4 w-4" /> Contact Seller
             </Button>
           </Link>

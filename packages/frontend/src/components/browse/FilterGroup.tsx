@@ -18,11 +18,11 @@ const FilterGroup = ({title, children}: FilterGroupProps) => {
     <Accordion type="single" collapsible defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
 
-                <AccordionTrigger className="py-4 text-base font-semibold hover:no-underline">
+                <AccordionTrigger className="py-4 text-base font-bold hover:no-underline font-poppins">
                         {title}
                 </AccordionTrigger>
 
-                <AccordionContent className="pt-2">
+                <AccordionContent className="pt-2 font-montserrat">
                         {children}
                 </AccordionContent>
 

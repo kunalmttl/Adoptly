@@ -61,7 +61,7 @@ const ListPetPage = () => {
 
   // If the user is a seller, show the form.
   return (
-    <div className="bg-neutral-100 min-h-screen w-full p-4 sm:p-8 pt-24">
+    <div className="bg-ornage-50 min-h-screen w-full p-4 sm:p-8 pt-24">
       <div className="container mx-auto max-w-6xl">
         
         <div className="mb-6">

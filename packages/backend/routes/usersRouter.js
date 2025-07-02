@@ -12,7 +12,8 @@ const { getAllUsers,
         getUserById, 
         getMyProfile, 
         updateUserProfile, 
-        switchUserProfileType } = require('../controllers/userController');
+        switchUserProfileType,
+        updateMyAvatar } = require('../controllers/userController');
 const isLoggedIn = require('../middlewares/isLoggedIn');
 
 
@@ -29,6 +30,7 @@ router.use(isLoggedIn);
 // * @route   GET /api/v1/users/me
 // * @desc    Get the profile of the currently logged-in user
 // * @access  Private
+router.put('/me/avatar', updateMyAvatar);
 router.get('/me', getMyProfile);
 router.put('/me', updateUserProfile);
 router.put('/me/switch-profile', switchUserProfileType);

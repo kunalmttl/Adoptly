@@ -70,15 +70,15 @@ const MyListingsPage = () => {
   }
   
   return (
-    <div className="container mx-auto py-12 pt-24">
+    <div className="container mx-auto py-12 pt-24 px-20">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">My Pet Listings</h1>
-        <p className="text-neutral-500">Manage all the pets you have listed for adoption.</p>
+        <h1 className="text-3xl font-bold font-poppins">My Pet Listings</h1>
+        <p className="text-neutral-500 font-montserrat">Manage all the pets you have listed for adoption.</p>
       </div>
 
       {pets.length > 0 ? (
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          className="grid grid-cols-1 mt-15 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
           initial="hidden"
           animate="visible"
           transition={{ staggerChildren: 0.1 }}

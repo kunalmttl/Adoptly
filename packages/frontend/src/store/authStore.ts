@@ -11,6 +11,7 @@ export interface User
   name: string;
   email: string;
   profile_type: 'adopter' | 'seller';
+  picture?: string; 
 }
 
 interface AuthState 

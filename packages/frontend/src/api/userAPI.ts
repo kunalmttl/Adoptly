@@ -31,3 +31,8 @@ export const updateMyProfile = async (profileData: UpdateProfileData) =>
   const response = await axiosInstance.put('/users/me', profileData);
   return response.data;
 };
+
+export const updateMyAvatar = async (pictureUrl: string) => {
+  const response = await axiosInstance.put('/users/me/avatar', { picture: pictureUrl });
+  return response.data;
+};

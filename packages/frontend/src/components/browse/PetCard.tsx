@@ -61,16 +61,16 @@ const PetCard = ({ id, imageUrl, name, age, isVaccinated, status , location}: Pe
         </div>
       
         {/* Content Section */}
-        <div className="p-4 bg-white">
-          <h3 className="text-lg font-bold text-neutral-800 group-hover:text-indigo-600 transition-colors"> {name} </h3>
+        <div className="p-4 bg-white font-montserrat">
+          <h3 className="text-lg font-bold text-neutral-800 group-hover:text-gray-600 transition-colors font-poppins"> {name} </h3>
           <p className="text-sm text-neutral-500"> {age} {age === 1 ? 'year' : 'years'} old </p>
           <p className="text-sm text-neutral-500"> {location.city}, {location.country} </p>
           
           {/* Status Tags */}
           <div className="mt-4 flex flex-wrap gap-2">
             {status === 'available' && (
-              <Badge variant="secondary" className="border-green-300 bg-green-300 text-gray-800">
-                <Heart className="mr-1 h-3 w-3 color-red-500 outline-red-500 fill-red-500" /> Available
+              <Badge variant="secondary" className="border-green-300 bg-[#00ab41] text-white">
+                <Heart className="mr-1 h-3 w-3  fill-red-500" /> Available
               </Badge>
             )}
             {status === 'pending' && (
