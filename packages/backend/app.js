@@ -23,10 +23,10 @@ const dbConnection = require('./config/mongoose-connection');
 //  --- Router Imports ---
 
 const authRouter = require('./routes/authRouter');
+const uploadRouter = require('./routes/uploadRouter'); 
 const usersRouter = require('./routes/usersRouter');
 const petsRouter = require('./routes/petsRouter');
 const applicationRouter = require('./routes/applicationRouter');
-const uploadRouter = require('./routes/uploadRouter'); 
 const contactRouter = require('./routes/contactRouter');
 
 //  --- App Initialization ---

@@ -16,7 +16,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
-
+import { ImageManager } from './ImageManager'; 
 const editPetFormSchema = z.object({
   description: z.string().min(10, "Description is required."),
   age: z.coerce.number().positive().optional(),
@@ -196,6 +196,23 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
               </FormItem>
             )}
           />
+
+            <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ImageManager
+                    initialImages={field.value || []}
+                    onImageChange={field.onChange} // Connects it to react-hook-form
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="flex items-center justify-between pt-4">
             {/* Delete Button with Confirmation Dialog */}
             <AlertDialog>

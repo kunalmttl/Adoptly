@@ -5,6 +5,9 @@ const router  = express.Router();
 const upload  = require('../utils/multer-config');
 
 
+const { signUpload } = require('../controllers/uploadController');
+const isLoggedIn = require('../middlewares/isLoggedIn');
+
 
 
 // * @route   POST /api/v1/upload
@@ -42,5 +45,9 @@ router.post('/', upload.array('petImages', 5), (req, res) =>
     res.status(500).json({ message: 'Server error during file upload.' });
   }
 });
+
+
+router.post('/sign', isLoggedIn, signUpload);
+
 
 module.exports = router;
