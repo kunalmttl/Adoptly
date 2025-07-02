@@ -70,8 +70,70 @@ export const ListPetForm = ({ currentStep, setCurrentStep }: ListPetFormProps) =
     mode: 'onChange',
   });
 
-  const handleUploadComplete = (urls: string[]) => {
-    form.setValue('images', urls, { shouldValidate: true });
+
+const petFormSchema = z.object({
+  name: z.string().min(2, "Name is required and must be at least 2 characters."),
+  species: z.enum(["dog", "cat", "rabbit", "bird", "other"], { required_error: "Please select a species." }),
+  description: z.string().min(10, "Description is required and must be at least 10 characters."),
+  adoption_fee: z.coerce.number().min(0, "Adoption fee is required."),
+  city: z.string().min(2, "City is required."),
+  country: z.string().min(2, "Country is required."),
+  images: z.array(z.string()).min(1, "At least one image is required."),
+  breed: z.string().optional(),
+  age: z.coerce.number().positive().optional(),
+  gender: z.enum(["male", "female"]).optional(),
+  height: z.coerce.number().positive().optional(),
+  weight: z.coerce.number().positive().optional(),
+  vaccinated: z.boolean().default(false),
+  special_needs: z.boolean().default(false),
+  state: z.string().optional(),
+  status: z.enum(["available", "pending", "adopted"]),
+});
+
+type PetFormValues = z.infer<typeof petFormSchema>;
+
+interface ListPetFormProps {
+  currentStep: number;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const ListPetForm = ({ currentStep, setCurrentStep }: ListPetFormProps) => {
+  const navigate = useNavigate();
+  const [images, setImages] = useState<string[]>([]);
+
+  const form = useForm<PetFormValues>({
+    resolver: zodResolver(petFormSchema),
+    defaultValues: {
+      name: "",
+      species: undefined,
+      description: "",
+      adoption_fee: 0,
+      city: "",
+      country: "",
+      images: [],
+      breed: "",
+      age: undefined,
+      gender: undefined,
+      height: undefined,
+      weight: undefined,
+      vaccinated: false,
+      special_needs: false,
+      state: "",
+      status: "available",
+    },
+    mode: 'onChange',
+  });
+
+  const handleImagesUploaded = (urls: string[]) => {
+    const newImages = [...images, ...urls];
+    setImages(newImages);
+    form.setValue('images', newImages, { shouldValidate: true });
+  };
+
+  const handleDeleteImage = (imageUrl: string) => {
+    const newImages = images.filter((url) => url !== imageUrl);
+    setImages(newImages);
+    form.setValue('images', newImages, { shouldValidate: true });
   };
 
   const onSubmit: SubmitHandler<PetFormValues> = async (data) => {
@@ -144,11 +206,148 @@ export const ListPetForm = ({ currentStep, setCurrentStep }: ListPetFormProps) =
               <FormItem>
                 <FormLabelWithIndicator required>Images</FormLabelWithIndicator>
                 <FormControl>
-                  <ImageUploader onUploadComplete={handleUploadComplete} />
+                  <ImageUploader onImagesUploaded={handleImagesUploaded} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                {images.map((url) => (
+                  <div key={url} className="relative">
+                    <img src={url} alt="Pet" className="h-32 w-full rounded-md object-cover" />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute right-1 top-1 h-6 w-6"
+                      onClick={() => handleDeleteImage(url)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabelWithIndicator required>Name</FormLabelWithIndicator>
+                <FormControl><Input placeholder="e.g., Buddy" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem>
+                <FormLabelWithIndicator required>Description</FormLabelWithIndicator>
+                <FormControl>
+                  <Textarea placeholder="Tell us about your pet's personality..." className="min-h-[120px]" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+        )}
+
+        {/* ... (rest of the form remains the same) ... */}
+
+      </form>
+    </Form>
+  );
+};
+
+  const onSubmit: SubmitHandler<PetFormValues> = async (data) => {
+    const toastId = toast.loading("Submitting your listing...");
+    try {
+      const petDataForApi: CreatePetPayload = {
+        name: data.name,
+        species: data.species,
+        description: data.description,
+        adoption_fee: data.adoption_fee,
+        images: data.images,
+        breed: data.breed,
+        age: data.age,
+        gender: data.gender,
+        health_status: {
+          vaccinated: data.vaccinated,
+          special_needs: data.special_needs,
+        },
+        size: {
+          height: data.height,
+          weight: data.weight,
+        },
+        status: data.status,
+        location: {
+          city: data.city,
+          country: data.country,
+          state: data.state,
+        },
+      };
+
+      const newPet = await createPetListing(petDataForApi);
+      toast.success("Pet listed successfully!", { id: toastId });
+      navigate(`/pets/${newPet._id}`);
+    } catch (error) {
+      let errorMessage = "Failed to list pet. Please try again.";
+      if (isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      }
+      toast.error(errorMessage, { id: toastId });
+      console.error("Pet listing failed:", error);
+    }
+  };
+
+  const handleNextStep = async () => {
+    let fieldsToValidate: (keyof PetFormValues)[] = [];
+    if (currentStep === 1) {
+      fieldsToValidate = ['name', 'description', 'images'];
+    } else if (currentStep === 2) {
+      fieldsToValidate = ['species']; // Only species is truly required in this step
+    }
+    
+    const isValid = await form.trigger(fieldsToValidate);
+    
+    if (isValid) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      toast.error("Please fill out all required fields before continuing.");
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        
+        {/* # Step 1: Pet Information */}
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-poppins font-bold text-neutral-800">Pet Information</h2>
+            <FormField control={form.control} name="images" render={() => (
+              <FormItem>
+                <FormLabelWithIndicator required>Images</FormLabelWithIndicator>
+                <FormControl>
+                  <ImageUploader onImagesUploaded={handleImagesUploaded} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                {images.map((url) => (
+                  <div key={url} className="relative">
+                    <img src={url} alt="Pet" className="h-32 w-full rounded-md object-cover" />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute right-1 top-1 h-6 w-6"
+                      onClick={() => handleDeleteImage(url)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
             <FormField control={form.control} name="name" render={({ field }) => (
               <FormItem>
                 <FormLabelWithIndicator required>Name</FormLabelWithIndicator>
