@@ -35,7 +35,7 @@ module.exports.registerUser = async function (req, res)
 
         const hashedPassword = await argon2.hash(password);
         const otp = generateOtp();
-        const otp_expiry = new Date(Date.now() + 60000); // OTP expires in 1 minute
+        const otp_expiry = new Date(Date.now() + 60000*10); // OTP expires in 10 minute
 
         const newUser = await UserFromDB.create({
             name,

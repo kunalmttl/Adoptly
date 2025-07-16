@@ -32,7 +32,7 @@ const sendOtpEmail = async (to, otp) =>
       html: `
         <div style="font-family: sans-serif; text-align: center; padding: 20px;">
           <h2>Adoptly Verification</h2>
-          <p>Here is your one-time password. It is valid for 1 minute.</p>
+          <p>Here is your one-time password. It is valid for 10 minutes.</p>
           <p style="font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
             ${otp}
           </p>
