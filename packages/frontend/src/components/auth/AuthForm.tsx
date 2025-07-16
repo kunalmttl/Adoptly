@@ -66,109 +66,109 @@ const AuthForm = ({formtype, onSubmit} : AuthFormProps) => {
 
 
         return (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-                <Card className="w-200 max-w-sm justify-center ">
-                        <CardHeader className="text-center">
-                                <CardTitle className="font-poppins " > {title}</CardTitle>
-                                <CardDescription className="font-montserrat text-xs"> {description} </CardDescription>
-                        </CardHeader>
-
-                        <CardContent>
-                                <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                                {formtype === 'register' && (
-                                                        <motion.div
-                                                                initial="hidden"
-                                                                animate="visible"
-                                                                variants={formVariants}
-                                                                transition={{ delay: 0.1 }}>
-                                                                <FormField 
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-limegreen to-beige">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
+                        <Card className="w-200 max-w-sm justify-center">
+                                <CardHeader className="text-center">
+                                        <CardTitle className="font-poppins " > {title}</CardTitle>
+                                        <CardDescription className="font-montserrat text-xs"> {description} </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                        <Form {...form}>
+                                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                                        {formtype === 'register' && (
+                                                                <motion.div
+                                                                        initial="hidden"
+                                                                        animate="visible"
+                                                                        variants={formVariants}
+                                                                        transition={{ delay: 0.1 }}>
+                                                                        <FormField
+                                                                                control={form.control}
+                                                                                name="name"
+                                                                                render={({ field }) => (
+                                                                                        <FormItem>
+                                                                                                <FormLabel className="font-poppins text-[10px]">Name</FormLabel>
+                                                                                                <FormControl>
+                                                                                                        <Input {...field} placeholder="Enter your name" />
+                                                                                                </FormControl>
+                                                                                                <FormMessage />
+                                                                                        </FormItem>
+                                                                                )}/>
+                                                                </motion.div>
+                                                        )}
+                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
+                                                                <FormField
                                                                         control={form.control}
-                                                                        name="name"
+                                                                        name="email"
                                                                         render={({ field }) => (
-                                                                                <FormItem>
-                                                                                        <FormLabel className="font-poppins text-[10px]">Name</FormLabel>
-                                                                                        <FormControl>
-                                                                                                <Input {...field} placeholder="Enter your name" />
-                                                                                        </FormControl>
-                                                                                        <FormMessage />
-                                                                                </FormItem>
+                                                                        <FormItem>
+                                                                        <FormLabel className="font-poppins text-[10px]">Email</FormLabel>
+                                                                        <FormControl>
+                                                                                <Input className="font-montserrat size-xs" type="email" placeholder="you@example.com" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                        </FormItem>
                                                                         )}/>
                                                         </motion.div>
-                                                )}
-                                                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
-                                                        <FormField
+                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
+                                                                <FormField
                                                                 control={form.control}
-                                                                name="email"
+                                                                name="password"
                                                                 render={({ field }) => (
                                                                 <FormItem>
-                                                                <FormLabel className="font-poppins text-[10px]">Email</FormLabel>
+                                                                <FormLabel className="font-poppins text-[10px]">Password</FormLabel>
                                                                 <FormControl>
-                                                                        <Input className="font-montserrat size-xs" type="email" placeholder="you@example.com" {...field} />
+                                                                        <Input type="password" {...field} />
                                                                 </FormControl>
                                                                 <FormMessage />
-                                                                </FormItem>
-                                                                )}/>
-                                                </motion.div>
-                                                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
-                                                        <FormField
-                                                        control={form.control}
-                                                        name="password"
-                                                        render={({ field }) => (
-                                                        <FormItem>
-                                                        <FormLabel className="font-poppins text-[10px]">Password</FormLabel>
-                                                        <FormControl>
-                                                                <Input type="password" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                        </FormItem>)}/>
-                                                </motion.div>
-                                                                
-                                                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.4 }}>
-                                                        <FormField
-                                                                control={form.control}
-                                                                name="profile_type"
-                                                                render={({ field }) => (
-                                                                <FormItem className="space-y-3 pt-2">
-                                                                        <FormLabel className="font-poppins text-[12px] text-center block"> Continue as </FormLabel>
-                                                                <FormControl>
-                                                                <ToggleGroup
-                                                                        type="single"
-                                                                        variant="outline"
-                                                                        className="grid grid-cols-2 gap-2 ml-22"
-                                                                        value={field.value}
-                                                                        onValueChange={field.onChange}>
-                                                                        
-                                                                        {/* Adopter Option */}
-                                                                        <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-beige data-[state=on]:text-black">
-                                                                        <User className="h-8 w-8" />
-                                                                        <span className="text-xs font-montserrat">Adopter</span>
-                                                                        </ToggleGroupItem>
-                                                                        
-                                                                        {/* Seller Option */}
-                                                                        <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-limegreen data-[state=on]:text-black">
-                                                                        <Store className="h-8 w-8" />
-                                                                        <span className="text-xs font-medium font-montserrat">Seller</span>
-                                                                        </ToggleGroupItem>
-                                                                </ToggleGroup>
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                                </FormItem>
-                                                                )}
-                                                        />
+                                                                </FormItem>)}/>
                                                         </motion.div>
-
-                                                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.5 }}>
-                                                        <Button type="submit" className="w-full font-poppins">{buttonText}</Button>
-                                                </motion.div>
-                                        </form>
-                                </Form>
-                        </CardContent>
-                        <CardFooter className="flex justify-center text-xs font-montserrat"> 
-                                <p>{footerText} <Link to={footerLink} className="font-semibold text-indigo-600 hover:underline">{footerLinkText}</Link></p> 
-                        </CardFooter>
-                </Card>
-        </motion.div>
+                
+                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.4 }}>
+                                                                <FormField
+                                                                        control={form.control}
+                                                                        name="profile_type"
+                                                                        render={({ field }) => (
+                                                                        <FormItem className="space-y-3 pt-2">
+                                                                                <FormLabel className="font-poppins text-[12px] text-center block"> Continue as </FormLabel>
+                                                                        <FormControl>
+                                                                        <ToggleGroup
+                                                                                type="single"
+                                                                                variant="outline"
+                                                                                className="grid grid-cols-2 gap-2 ml-22"
+                                                                                value={field.value}
+                                                                                onValueChange={field.onChange}>
+                
+                                                                                {/* Adopter Option */}
+                                                                                <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-beige data-[state=on]:text-black">
+                                                                                <User className="h-8 w-8" />
+                                                                                <span className="text-xs font-montserrat">Adopter</span>
+                                                                                </ToggleGroupItem>
+                
+                                                                                {/* Seller Option */}
+                                                                                <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-limegreen data-[state=on]:text-black">
+                                                                                <Store className="h-8 w-8" />
+                                                                                <span className="text-xs font-medium font-montserrat">Seller</span>
+                                                                                </ToggleGroupItem>
+                                                                        </ToggleGroup>
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                        </FormItem>
+                                                                        )}
+                                                                />
+                                                                </motion.div>
+                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.5 }}>
+                                                                <Button type="submit" className="w-full font-poppins">{buttonText}</Button>
+                                                        </motion.div>
+                                                </form>
+                                        </Form>
+                                </CardContent>
+                                <CardFooter className="flex justify-center text-xs font-montserrat">
+                                        <p>{footerText} <Link to={footerLink} className="font-semibold text-indigo-600 hover:underline">{footerLinkText}</Link></p>
+                                </CardFooter>
+                        </Card>
+                </motion.div>
+        </div>
         )
 }
 
