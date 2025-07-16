@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "packages/backend/app.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "packages/frontend/vite.config.ts",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/packages/backend/app.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/packages/frontend/dist/index.html"
+    }
+  ]
+}
