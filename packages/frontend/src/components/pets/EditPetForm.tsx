@@ -217,20 +217,20 @@ export const EditPetForm = ({ pet }: { pet: Pet }) => {
             {/* Delete Button with Confirmation Dialog */}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button type="button" variant="destructive">
+                <Button type="button" className="bg-red-500 hover:bg-red-700 font-white" >
                   Delete Listing
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle >Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete this pet listing from our servers.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-700 font-white">
                     Yes, Delete Listing
                   </AlertDialogAction>
                 </AlertDialogFooter>

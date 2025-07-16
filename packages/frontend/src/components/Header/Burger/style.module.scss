@@ -19,10 +19,10 @@
     &::after, &::before {
         content: "";
         display: block;
-        height: 1px;
+        height: 2.5px;
         width: 40%;
         margin: auto;
-        background-color: white; // The lines are white by default
+        background-color: currentColor; // The lines are white by default
         position: relative;
         transition: transform 0.3s;
     }

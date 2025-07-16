@@ -71,8 +71,8 @@ const EditPetPage = () => {
   return (
     <div className="container mx-auto max-w-4xl py-12 pt-32">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Edit Listing for {pet?.name}</h1>
-        <p className="text-neutral-500">Update the details for your pet.</p>
+        <h1 className="text-3xl font-bold font-poppins">Edit Listing for {pet?.name}</h1>
+        <p className="text-neutral-500 font-montserrat">Update the details for your pet.</p>
       </div>
       
       {pet && <EditPetForm pet={pet} />}

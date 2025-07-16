@@ -35,5 +35,15 @@
             }
         }
     }
-
+    
+    .source {
+     position: absolute;
+     bottom: 24px;  // distance from bottom
+     right: 24px;   // distance from right
+ 
+     a {
+       // you can adjust text/icon color here if needed:
+       color: inherit;
+     }
+   }
 }

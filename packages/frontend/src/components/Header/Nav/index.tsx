@@ -49,8 +49,8 @@ export default function Nav() {
             >
                 <div className={styles.body}>
                     <div onMouseLeave={() => { setSelectedIndicator(location.pathname) }} className={styles.nav}>
-                        <div className={styles.header}>
-                            <p>Navigation</p>
+                        <div className={`${styles.header} flex items-center justify-between px-4 py-2 mt-25`}>
+                        <p>Navigation</p>
                         </div>
                         {
                             navItems.map((data, index) => {
@@ -63,6 +63,13 @@ export default function Nav() {
                             })
                         }
                     </div>
+                </div>
+
+                <div className={styles.source}>
+                    <a href="https://www.github.com/kunalmttl/adoptly" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium hover:underline">
+                    <span className='font-mono color-gray-800'> view source code </span>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" className='w-7 h-7' />
+                    </a>
                 </div>
                 <Curve />
             </motion.div>

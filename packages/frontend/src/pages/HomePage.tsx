@@ -81,7 +81,7 @@ const HomePage = () =>
               initial="hidden"
               animate={!isLoading ? "visible" : "hidden"} // Animate only when loading is done
             >
-              <motion.span className="group relative inline-block cursor-pointer text-white" variants={headingItemVariants}>
+              <motion.span className="group relative h-50 w-50 inline-block cursor-pointer font-pacifico text-white" variants={headingItemVariants}>
                 adoptly
                 <span className="absolute -bottom-1 left-0 h-[6px] w-0 bg-white transition-all duration-500 group-hover:w-full" />
               </motion.span>
