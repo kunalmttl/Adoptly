@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 
 const baseURL = import.meta.env.DEV
   ? 'http://localhost:3000/api/v1'
-  : `${window.location.origin}/api/v1`;    
+  : import.meta.env.VITE_API_URL;    
 
 
 // * Create an Axios instance with a predefined base URL
