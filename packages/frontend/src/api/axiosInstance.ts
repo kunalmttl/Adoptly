@@ -5,7 +5,7 @@ import { useAuthStore } from '@/store/authStore';
 
 // * Create an Axios instance with a predefined base URL
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL: 'https://adoptly-tan.vercel.app',                     
   withCredentials: true, 
 });
 
