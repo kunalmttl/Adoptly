@@ -128,13 +128,14 @@ app.use((err, req, res, next) =>
 
 
 
+module.exports = app;
 
 // #####################################################################
 // #                           Server Startup                          #
 // #####################################################################
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`* Server is live and listening on port ${PORT}`);
-    console.log(`* API available at http://localhost:${PORT}/api/v1`);
-});
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//     console.log(`* Server is live and listening on port ${PORT}`);
+//     console.log(`* API available at http://localhost:${PORT}/api/v1`);
+// });
