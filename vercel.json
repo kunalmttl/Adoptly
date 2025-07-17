@@ -10,7 +10,6 @@
       "src": "packages/frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "npm run build",
         "distDir": "packages/frontend/dist"
       }
     }
@@ -19,11 +18,11 @@
   "routes": [
     {
       "src": "/api/v1/(.*)",
-      "dest": "packages/backend/app.js"
+      "dest": "/packages/backend/app.js"
     },
     {
       "src": "/(.*)",
-      "dest": "packages/frontend/dist/index.html"
+      "dest": "/packages/frontend/dist/index.html"
     }
   ]
 }
