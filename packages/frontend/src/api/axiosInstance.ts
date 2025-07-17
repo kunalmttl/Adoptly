@@ -8,6 +8,7 @@ const baseURL = import.meta.env.DEV
   ? 'http://localhost:3000/api/v1'
   : import.meta.env.VITE_API_URL;    
 
+console.log("Base URL for Axios:", baseURL);
 
 // * Create an Axios instance with a predefined base URL
 const axiosInstance = axios.create({
