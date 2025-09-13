@@ -16,7 +16,7 @@
 </div>
 
 <!-- You can add a GIF of your app in action here. It's highly recommended! -->
-<!-- ![Adoptly Demo GIF](link-to-your-gif.gif) -->
+[![DEMO VIDEO](https://img.youtube.com/vi/UDtcM2PuEo8/maxresdefault.jpg)](https://youtu.be/UDtcM2PuEo8)
 
 ## 🐾 About The Project
 
