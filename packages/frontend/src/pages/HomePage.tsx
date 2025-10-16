@@ -142,7 +142,7 @@ const HomePage = () =>
               />
               {/* Card 2: List a Pet */}
               <ChoiceCard
-                imageUrl="https://scontent.fbho3-4.fna.fbcdn.net/v/t1.6435-9/35381387_10155948847421107_2389321479637434368_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=-DGo5zNw2uEQ7kNvwFgQ6HS&_nc_oc=AdlqsDaO3fHdGa7u53rRKYMEXSvbc6gyM5zEOBXMXjpFFFswB_E48cxDby0ADWIcAEM&_nc_zt=23&_nc_ht=scontent.fbho3-4.fna&_nc_gid=BA1xBfRU3DZjRMNqsd6bqQ&oh=00_AfPx9d_NTC_EdedKPokIsAIHlwU-WmPZAZJSONG0-i9ucA&oe=688A02F5"
+                imageUrl="https://api.army.mil/e2/c/images/2012/05/03/245957/original.jpg"
                 title="Rehome Your Pet"
                 description="Give your pet a chance at a new loving home. Our simple and secure process helps you find the best possible match."
                 buttonText="List Your Pet"

@@ -81,10 +81,12 @@ module.exports.loginUser = async function (req, res) {
         
         // =-= Generate the token immediately upon successful password verification.
         const token = generateToken(user);
-        
-        res.cookie('token', token, {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.cookie('token', token, 
+        {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000
         });
 
