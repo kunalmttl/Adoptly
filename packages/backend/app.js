@@ -1,4 +1,3 @@
-
 // #####################################################################
 // #                 Adoptly API Server - Main Entry Point             #
 // #      This file configures the Express application, sets up        #
@@ -70,6 +69,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Serves static files (like uploaded pet images) from the 'public' directory.
+// This route is mainly used for local dev and image testing, Vercel handles static paths in production.
 app.use(express.static(path.join(__dirname, "public")));
 
 
@@ -129,13 +129,3 @@ app.use((err, req, res, next) =>
 
 
 module.exports = app;
-
-// #####################################################################
-// #                           Server Startup                          #
-// #####################################################################
-
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//     console.log(`* Server is live and listening on port ${PORT}`);
-//     console.log(`* API available at http://localhost:${PORT}/api/v1`);
-// });

@@ -15,14 +15,14 @@
     }
   ],
 
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/v1/(.*)",
-      "dest": "/packages/backend/app.js"
+      "source": "/api/v1/(.*)",
+      "destination": "/packages/backend/app.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/packages/frontend/$1" 
+      "source": "/(.*)",
+      "destination": "/packages/frontend/dist/index.html"
     }
   ]
 }
