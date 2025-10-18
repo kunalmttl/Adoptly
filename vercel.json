@@ -1,29 +1,26 @@
 {
   "version": 2,
-
   "builds": [
     {
       "src": "packages/backend/app.js",
       "use": "@vercel/node"
     },
     {
-      "src": "packages/frontend/package.json",
+      "src": "packages/frontend/vite.config.ts",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "npm run build",
-        "distDir": "packages/frontend/dist"
+        "distDir": "dist"
       }
     }
   ],
-
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/v1/(.*)",
-      "dest": "packages/backend/app.js"
+      "source": "/api/(.*)",
+      "destination": "/packages/backend/app.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "packages/frontend/dist/index.html"
+      "source": "/(.*)",
+      "destination": "/packages/frontend/dist/index.html"
     }
   ]
 }
