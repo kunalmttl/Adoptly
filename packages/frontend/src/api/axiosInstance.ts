@@ -3,9 +3,10 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 // * Create an Axios instance with a predefined base URL
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL: API_BASE_URL,
   withCredentials: true, 
 });
 
