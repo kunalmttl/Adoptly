@@ -3,15 +3,9 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
-
-const baseURL = import.meta.env.DEV
-  ? 'http://localhost:3000/api/v1'
-  : `${window.location.origin}/api/v1`;    
-
-
 // * Create an Axios instance with a predefined base URL
 const axiosInstance = axios.create({
-  baseURL,
+  baseURL: 'https://adoptly-tan.vercel.app',                     
   withCredentials: true, 
 });
 

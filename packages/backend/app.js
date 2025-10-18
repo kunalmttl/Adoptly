@@ -39,25 +39,12 @@ const app = express();
 // #                          Core Middleware                          #
 // #####################################################################
 
-const FRONTEND_URL = process.env.FRONTEND_URL;
-
 
 // ! CRITICAL: CORS must be configured to allow requests from your React frontend.
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // allow requests with no origin like mobile apps or curl
-      if (!origin) return cb(null, true);
-
-      // only allow the one you specified
-      if (origin === FRONTEND_URL) {
-        return cb(null, true);
-      }
-      cb(new Error(`CORS policy violation: ${origin} not allowed`));
-    },
-    credentials: true,
-  })
-);
+app.use(cors({
+    origin: 'https://adoptly-tan.vercel.app', // =-= This MUST match the port your Vite/React dev server is running on.
+    credentials: true // * Allows frontend to send/receive cookies for authentication.
+}));
 
 
 // Middleware to parse incoming JSON payloads.
