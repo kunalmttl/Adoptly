@@ -1,26 +1,44 @@
-// packages/backend/config/mongoose-connection.js
+// set DEBUG=development:*
+// change environment variable and set to development for this to run
+
+
+// #####################################################################
+// #                 Mongoose Database Connection Module               #
+// #####################################################################
+
+
+// * ------------------ Imports ------------------
 
 const mongoose = require('mongoose');
-const debug = require('debug')('development:mongoose');
+const dbgr = require('debug')('development:mongoose');       //  For logging connection status.
 
-// Immediately connect to MongoDB when this module is imported.
-(async () => {
-  try {
+// =-= Using an immediately-invoked async function (IIFE) to connect.*
+(async () => 
+{
+  try 
+  {
+    // Get the MongoDB URI directly from environment variables.
     const mongoURI = process.env.MONGODB_URI;
 
-    if (!mongoURI) {
-      debug('Error: MONGODB_URI is not defined in the .env file.');
-      process.exit(1); // Exit if DB connection string is missing.
+    // ! Make sure MONGODB_URI is defined in your .env file!
+    if (!mongoURI) 
+    {
+        dbgr('! ERROR: MONGODB_URI is not defined in the .env file.');
+        process.exit(1); // * Exit the application if the DB connection string is missing.
     }
 
+    // Await the connection to the database.
     await mongoose.connect(mongoURI);
-    debug('MongoDB connected successfully.');
+    dbgr('* MongoDB Connected Successfully.');
 
-  } catch (error) {
-    debug('Error: Could not connect to MongoDB.', error.message);
-    process.exit(1); // Exit on connection failure.
+  } 
+  catch (err) 
+  {
+    // Log any errors that occur during the connection process.
+    dbgr('! ERROR: Could not connect to MongoDB.', err.message);
+    process.exit(1); // * Exit the application on a connection failure.
   }
 })();
 
-// Export the Mongoose connection object.
+// * Export the Mongoose connection object for use in other parts of the application.
 module.exports = mongoose.connection;

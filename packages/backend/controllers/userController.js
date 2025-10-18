@@ -1,117 +1,175 @@
-// packages/backend/controllers/userController.js
+
+// #####################################################################
+// #                           User Controller                         #
+// #####################################################################
+
+
+//  ------------------ Imports ------------------
 
 const User = require('../models/user_model');
 
-// Get all users (for admin purposes).
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find().select('name email profile_type');
-    res.status(200).json(users);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Server error while fetching users.' });
-  }
-};
 
-// Get a single user by their ID.
-exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id).select('name email profile_type address bio listed_pets');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+// * @desc    Get all users (for admin purposes)
+// * @route   GET /api/v1/users
+// * @access  Private/Admin
+exports.getAllUsers = async (req, res) => 
+{
+    try 
+    {
+        // =-= In a real app, you'd want to add pagination here.
+        const users = await User.find().select('name email profile_type');
+        res.status(200).json(users);
+    } 
+    catch (error) 
+    {
+        res.status(500).json({ message: 'Error fetching users.' });
     }
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Server error while fetching user.' });
-  }
 };
 
-// Get the profile of the currently logged-in user.
-exports.getMyProfile = async (req, res) => {
-  try {
-    // req.user.id is attached by the authentication middleware.
+
+// * @desc    Get a single user by ID
+// * @route   GET /api/v1/users/:id
+// * @access  Private
+exports.getUserById = async (req, res) => 
+{
+    try 
+    {
+        const user = await User.findById(req.params.id).select('name email profile_type address bio listed_pets');
+        if (!user) 
+        {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        res.status(200).json(user);
+    } 
+    catch (error) 
+    {
+        res.status(500).json({ message: 'Error fetching user.' });
+    }
+};
+
+
+// * @desc    Get the currently logged-in user's profile
+// * @route   GET /api/v1/users/me
+// * @access  Private
+exports.getMyProfile = async (req, res) => 
+{
+    // =-= The user object is attached to `req.user` by the `isLoggedIn` middleware.
+    // =-= This is more secure than passing the user ID in the URL.
     const user = await User.findById(req.user.id).select('-password');
     res.status(200).json(user);
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ message: 'Server error while fetching profile.' });
-  }
 };
 
-// Update the profile of the logged-in user.
-exports.updateUserProfile = async (req, res) => {
-  try {
-    // Only allow updating specific, non-critical fields.
-    const { name, contact, bio, address } = req.body;
-    const updatedFields = { name, contact, bio, address };
 
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, updatedFields, {
-      new: true,
-      runValidators: true,
-    }).select('-password');
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found.' });
+// * @desc    Update the logged-in user's profile
+// * @route   PUT /api/v1/users/me
+// * @access  Private
+exports.updateUserProfile = async (req, res) => 
+{
+    try 
+    {
+        // =-= We only allow updating specific, non-critical fields.
+        // =-= Never allow updating 'email' or 'password' through a generic update route.
+        const { name, contact, bio, address } = req.body;
+        
+        const updatedFields = 
+        {
+            name,
+            contact,
+            bio,
+            address
+        };
+
+        // * Find the user by the ID from the token and update their details.
+        // * { new: true } ensures the updated user document is returned.
+        // * { runValidators: true } ensures our model validations are checked.
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id, 
+            updatedFields, 
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) 
+        {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        res.status(200).json(updatedUser);
+
+    } 
+    catch (err) 
+    {
+        if (err.name === 'ValidationError') 
+        {
+            const messages = Object.values(err.errors).map(val => val.message);
+            return res.status(400).json({ message: messages.join('. ') });
+        }
+        res.status(500).json({ message: 'Error updating user profile.' });
     }
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({ message: messages.join('. ') });
-    }
-    console.error('Error updating profile:', error);
-    res.status(500).json({ message: 'Server error while updating user profile.' });
-  }
 };
 
-// Switch the profile type of the logged-in user.
+// * @desc    Switch the logged-in user's profile type
+// * @route   PUT /api/v1/users/me/switch-profile
+// * @access  Private
 exports.switchUserProfileType = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+    try {
+        const user = await User.findById(req.user.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        // Toggle the profile type
+        const newProfileType = user.profile_type === 'adopter' ? 'seller' : 'adopter';
+        user.profile_type = newProfileType;
+
+        await user.save();
+
+        res.status(200).json({ 
+            message: `Profile successfully switched to ${newProfileType}.`,
+            // FIX: Return the full user object to keep frontend state consistent
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                profile_type: user.profile_type
+            }
+        });
+
+    } catch (_error) {
+        console.error("Error switching profile type:", _error);
+        res.status(500).json({ message: 'Error switching profile type.' });
     }
-
-    // Toggle the profile type.
-    user.profile_type = user.profile_type === 'adopter' ? 'seller' : 'adopter';
-    await user.save();
-
-    res.status(200).json({
-      message: `Profile successfully switched to ${user.profile_type}.`,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        profile_type: user.profile_type,
-      },
-    });
-  } catch (error) {
-    console.error('Error switching profile type:', error);
-    res.status(500).json({ message: 'Server error while switching profile type.' });
-  }
 };
 
-// Update the avatar of the logged-in user.
+
+// * @desc    Update the logged-in user's avatar
+// * @route   PUT /api/v1/users/me/avatar
+// * @access  Private
 exports.updateMyAvatar = async (req, res) => {
-  try {
-    const { picture } = req.body;
-    if (!picture) {
-      return res.status(400).json({ message: 'No image URL provided.' });
-    }
+    try {
+        // Get the new image URL from the request body
+        const { picture } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { picture },
-      { new: true, runValidators: true }
-    ).select('-password');
+        if (!picture) {
+            return res.status(400).json({ message: 'No image URL provided.' });
+        }
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found.' });
+        // Find the user by their ID (from the token) and update only the 'picture' field
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            { picture: picture },
+            { new: true, runValidators: true } // Return the updated document
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.status(200).json(updatedUser);
+
+    } catch (err) {
+        console.error("Error updating avatar:", err);
+        res.status(500).json({ message: 'Error updating user avatar.' });
     }
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    console.error('Error updating avatar:', error);
-    res.status(500).json({ message: 'Server error while updating user avatar.' });
-  }
 };
