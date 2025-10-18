@@ -1,11 +1,14 @@
-// packages/backend/routes/contactRouter.js
+// # Contact Router
 
-const express = require('express');
-const router = express.Router();
-const { sendEmail } = require('../controllers/contactController');
-const isLoggedIn = require('../middlewares/isLoggedIn');
+const express           = require('express');
+const router            = express.Router();
+const contactController = require('../controllers/contactController');
+const isLoggedIn        = require('../middlewares/isLoggedIn');
 
-// Send a contact email to another user (protected route).
-router.post('/', isLoggedIn, sendEmail);
+
+// * @route   POST /api/v1/contact
+// * @desc    Send an email to another user
+// * @access  Private
+router.post('/', isLoggedIn, contactController.sendEmail);
 
 module.exports = router;

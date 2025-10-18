@@ -2,36 +2,40 @@
 
 const express = require('express');
 const router = express.Router();
-const petController = require('../controllers/petController');
-const applicationController = require('../controllers/applicationController');
+const { 
+  getAllPets, 
+  getPetById, 
+  createPet, 
+  updatePet, 
+  deletePet, 
+  getMyListedPets 
+} = require('../controllers/petController');
 const isLoggedIn = require('../middlewares/isLoggedIn');
+const { getApplicationsForPet } = require('../controllers/applicationController');
 
-// --- Public Routes ---
 
-// Get all pets with filtering and pagination.
-router.get('/', petController.getAllPets);
+// #####################################################################
+// #                            Public Routes                          #
+// #####################################################################
+// These can be accessed by anyone.
+router.get('/', getAllPets);
+router.get('/:id', getPetById); // Getting details for a single pet is public.
 
-// --- Protected Routes (Specific before Dynamic) ---
 
-// Get all pets listed by the logged-in user.
-router.get('/me/my-listings', isLoggedIn, petController.getMyListedPets);
+// #####################################################################
+// #                           Protected Routes                        #
+// #####################################################################
+// The isLoggedIn middleware will apply to all routes defined AFTER this line.
+router.use(isLoggedIn);
 
-// --- Public Route (Dynamic) ---
-// This must be after specific routes to avoid conflicts.
-router.get('/:id', petController.getPetById);
+// Specific routes before dynamic ones
+router.get('/me/my-listings', getMyListedPets); // Using a more RESTful path
+router.get('/:petId/applications', getApplicationsForPet);
 
-// --- Other Protected Routes ---
 
-// Get all applications for a specific pet (for the owner).
-router.get('/:petId/applications', isLoggedIn, applicationController.getApplicationsForPet);
-
-// Create a new pet listing.
-router.post('/', isLoggedIn, petController.createPet);
-
-// Update an existing pet listing.
-router.put('/:id', isLoggedIn, petController.updatePet);
-
-// Delete a pet listing.
-router.delete('/:id', isLoggedIn, petController.deletePet);
+// Dynamic routes last
+router.post('/', createPet);
+router.put('/:id', updatePet);
+router.delete('/:id', deletePet);
 
 module.exports = router;

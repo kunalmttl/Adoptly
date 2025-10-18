@@ -1,41 +1,54 @@
-// packages/backend/routes/usersRouter.js
+
+// #####################################################################
+// #                             User Router                           #
+// #####################################################################
+
+
+//  ------------------ Imports ------------------
 
 const express = require('express');
 const router = express.Router();
-const {
-  getAllUsers,
-  getUserById,
-  getMyProfile,
-  updateUserProfile,
-  switchUserProfileType,
-  updateMyAvatar,
-} = require('../controllers/userController');
+const { getAllUsers, 
+        getUserById, 
+        getMyProfile, 
+        updateUserProfile, 
+        switchUserProfileType,
+        updateMyAvatar } = require('../controllers/userController');
 const isLoggedIn = require('../middlewares/isLoggedIn');
 
-// All routes in this file are protected.
+
+
+// #####################################################################
+// #                            Route Definitions                      #
+// #####################################################################
+
+
+// ! All routes in this file are protected by default.
 router.use(isLoggedIn);
 
-// --- Routes for the logged-in user ---
-// These must be defined before the dynamic '/:id' route.
 
-// Get the current user's profile.
-router.get('/me', getMyProfile);
-
-// Update the current user's profile.
-router.put('/me', updateUserProfile);
-
-// Update the current user's avatar.
+// * @route   GET /api/v1/users/me
+// * @desc    Get the profile of the currently logged-in user
+// * @access  Private
 router.put('/me/avatar', updateMyAvatar);
-
-// Switch the current user's profile type.
+router.get('/me', getMyProfile);
+router.put('/me', updateUserProfile);
 router.put('/me/switch-profile', switchUserProfileType);
 
-// --- General user routes ---
-
-// Get all users (admin functionality).
+// * @route   GET /api/v1/users
+// * @desc    Get all users
+// * @access  Private (should be restricted to Admins in a real app)
 router.get('/', getAllUsers);
 
-// Get a specific user by their ID.
+
+// * @route   GET /api/v1/users/:id
+// * @desc    Get a specific user by their ID
+// * @access  Private
 router.get('/:id', getUserById);
+
+
+// ? TO-DO: Add routes for updating and deleting a user profile.
+// ? router.put('/me', updateUserProfile);
+// ? router.delete('/me', deleteUserProfile);
 
 module.exports = router;

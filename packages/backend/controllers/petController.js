@@ -1,142 +1,219 @@
-// packages/backend/controllers/petController.js
 
-const Pet = require('../models/pet_model');
+// #####################################################################
+// #                           Pet Controller                          #
+// #####################################################################
+
+
+//  ------------------ Imports ------------------
+
+const Pet = require('../models/pet_model'); 
 const User = require('../models/user_model');
 
-// Get all pets with filtering, sorting, and pagination.
-exports.getAllPets = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 9;
-    const skip = (page - 1) * limit;
 
-    // Build query object from request query parameters.
-    const queryObj = {};
-    const { species, breed, gender, status, details, search_by, search_query } = req.query;
+// * @desc    Get all pets with filtering/sorting
+// * @route   GET /api/v1/pets
+// * @access  Public
 
-    if (species && species !== 'all') queryObj.species = species;
-    if (breed) queryObj.breed = { $regex: breed, $options: 'i' };
-    if (gender) queryObj.gender = gender;
-    if (status && status !== 'all') queryObj.status = status;
-    if (details) queryObj.details = details;
-    if (search_by && search_query) {
-      queryObj[search_by] = { $regex: search_query, $options: 'i' };
+exports.getAllPets = async (req, res) => 
+{
+    try 
+    {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 9; // Hardcode to 9 pets per page as requested
+        const skip = (page - 1) * limit;
+
+
+        // 1. Start with a base query object
+        const queryObj = {};
+
+        // 2. Dynamically add filters from the request query parameters
+        if (req.query.species && req.query.species !== 'all') {
+            queryObj.species = req.query.species;
+        }
+        if (req.query.breed) {
+            // Use a case-insensitive regex for partial matches
+            queryObj.breed = { $regex: req.query.breed, $options: 'i' };
+        }
+        if (req.query.gender) {
+            queryObj.gender = req.query.gender;
+        }   
+        if (req.query.status && req.query.status !== 'all') {
+              queryObj.status = req.query.status;
+
+
+        }
+        if (req.query.details) {
+            queryObj.details = req.query.details;
+        }
+
+        const { search_by, search_query } = req.query;
+        if (search_by && search_query) {
+        // =-= Use a case-insensitive regex for partial matches
+        queryObj[search_by] = { $regex: search_query, $options: 'i' };
+        }
+
+        // You can add more filters here for age, vaccinated status, etc.
+
+        const totalPets = await Pet.countDocuments(queryObj);
+        const totalPages = Math.ceil(totalPets / limit);
+
+        // 3. Execute the query with the dynamically built filter object
+                const pets = await Pet.find(queryObj)
+            .sort({ createdAt: -1 }) // Sort by newest first
+            .skip(skip)
+            .limit(limit)
+            .populate('listed_by', 'name city');
+
+        res.status(200).json({
+            data: pets,
+            pagination: {
+                currentPage: page,
+                totalPages: totalPages,
+                totalPets: totalPets,
+            }
+        });
+
+
+
+    } 
+
+    catch (err) {
+        console.error("Error in getAllPets:", err); // Improved logging
+        res.status(500).json({ message: 'Error fetching pets.' });
     }
-
-    const totalPets = await Pet.countDocuments(queryObj);
-    const totalPages = Math.ceil(totalPets / limit);
-
-    const pets = await Pet.find(queryObj)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('listed_by', 'name city');
-
-    res.status(200).json({
-      data: pets,
-      pagination: { currentPage: page, totalPages, totalPets },
-    });
-  } catch (error) {
-    console.error('Error in getAllPets:', error);
-    res.status(500).json({ message: 'Server error while fetching pets.' });
-  }
 };
 
-// Get a single pet by its ID.
-exports.getPetById = async (req, res) => {
-  try {
-    const pet = await Pet.findById(req.params.id).populate('listed_by', '_id name email contact');
-    if (!pet) {
-      return res.status(404).json({ message: 'Pet not found.' });
+
+
+// * @desc    Get a single pet by ID
+// * @route   GET /api/v1/pets/:id
+// * @access  Public
+exports.getPetById = async (req, res) => 
+{
+    try 
+    {
+        const pet = await Pet.findById(req.params.id).populate('listed_by', '_id name email contact');
+        if (!pet) 
+        {
+            return res.status(404).json({ message: 'Pet not found.' });
+        }
+        res.status(200).json(pet);
+    } 
+    catch (err) 
+    {
+        res.status(500).json({ message: 'Error fetching pet details.' });
     }
-    res.status(200).json(pet);
-  } catch (error) {
-    console.error('Error in getPetById:', error);
-    res.status(500).json({ message: 'Server error while fetching pet details.' });
-  }
 };
 
-// Create a new pet listing.
-exports.createPet = async (req, res) => {
-  try {
-    if (req.user.profile_type !== 'seller') {
-      return res.status(403).json({ message: 'Forbidden: Only sellers can list pets.' });
+
+// * @desc    Create a new pet listing
+// * @route   POST /api/v1/pets
+// * @access  Private (Sellers only)
+exports.createPet = async (req, res) => 
+{
+    // =-= Middleware should have already confirmed user is logged in.
+    if (req.user.profile_type !== 'seller') 
+    {
+        return res.status(403).json({ message: 'Forbidden. Only users with a "seller" profile can list pets.' });
     }
+    try 
+    {
+        const petData = { ...req.body, listed_by: req.user.id };
+        const newPet = await Pet.create(petData);
+        
+        //  Also add this pet to the user's listed_pets array
+        await User.findByIdAndUpdate(req.user.id, { $push: { listed_pets: newPet._id } });
 
-    const petData = { ...req.body, listed_by: req.user.id };
-    const newPet = await Pet.create(petData);
-
-    // Add this pet to the user's list of pets.
-    await User.findByIdAndUpdate(req.user.id, { $push: { listed_pets: newPet._id } });
-
-    res.status(201).json(newPet);
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({ message: messages.join('. ') });
+        res.status(201).json(newPet);
+    } 
+    catch (err) 
+    {
+        //  Handle Mongoose validation errors
+        if (err.name === 'ValidationError') 
+        {
+            const messages = Object.values(err.errors).map(val => val.message);
+            return res.status(400).json({ message: messages.join('. ') });
+        }
+        res.status(500).json({ message: 'Error creating pet listing.' });
     }
-    console.error('Error in createPet:', error);
-    res.status(500).json({ message: 'Server error while creating pet listing.' });
-  }
 };
 
-// Get all pets listed by the currently logged-in user.
+// * @desc    Get all pets listed by the logged-in user
+// * @route   GET /api/v1/pets/my-listings
+// * @access  Private
 exports.getMyListedPets = async (req, res) => {
-  try {
-    const pets = await Pet.find({ listed_by: req.user.id }).sort({ createdAt: -1 });
-    res.status(200).json(pets);
-  } catch (error) {
-    console.error('Error in getMyListedPets:', error);
-    res.status(500).json({ message: 'Server error while fetching your pet listings.' });
-  }
+    try {
+        // req.user.id is attached by our `isLoggedIn` middleware
+        const pets = await Pet.find({ listed_by: req.user.id }).sort({ createdAt: -1 });
+        
+        res.status(200).json(pets);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching your pet listings.' });
+    }
 };
 
-// Update a pet listing.
-exports.updatePet = async (req, res) => {
-  try {
-    const pet = await Pet.findById(req.params.id);
-    if (!pet) {
-      return res.status(404).json({ message: 'Pet not found.' });
+
+// * @desc    Update a pet listing
+// * @route   PUT /api/v1/pets/:id
+// * @access  Private (Owner only)
+exports.updatePet = async (req, res) => 
+{
+    try 
+    {
+        const pet = await Pet.findById(req.params.id);
+        if (!pet) 
+        {
+            return res.status(404).json({ message: 'Pet not found.' });
+        }
+
+        // ! Security Check: Ensure the person updating is the person who listed it.
+        if (pet.listed_by.toString() !== req.user.id) 
+        {
+            return res.status(403).json({ message: 'Forbidden. You can only update your own listings.' });
+        }
+
+        const updatedPet = await Pet.findByIdAndUpdate(req.params.id, req.body, 
+        {
+            new: true, // * Return the updated document
+            runValidators: true // * Run Mongoose validators on update
+        });
+
+        res.status(200).json(updatedPet);
+    } 
+    catch (err) 
+    {
+        res.status(500).json({ message: 'Error updating pet listing.' });
     }
-
-    // Security check: Ensure the updater is the owner.
-    if (pet.listed_by.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Forbidden: You can only update your own listings.' });
-    }
-
-    const updatedPet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.status(200).json(updatedPet);
-  } catch (error) {
-    console.error('Error in updatePet:', error);
-    res.status(500).json({ message: 'Server error while updating pet listing.' });
-  }
 };
 
-// Delete a pet listing.
-exports.deletePet = async (req, res) => {
-  try {
-    const pet = await Pet.findById(req.params.id);
-    if (!pet) {
-      return res.status(404).json({ message: 'Pet not found.' });
+
+// * @desc    Delete a pet listing
+// * @route   DELETE /api/v1/pets/:id
+// * @access  Private (Owner only)
+exports.deletePet = async (req, res) => 
+{
+    try 
+    {
+        const pet = await Pet.findById(req.params.id);
+        if (!pet) 
+                {
+            return res.status(404).json({ message: 'Pet not found.' });
+        }
+        
+        if (pet.listed_by.toString() !== req.user.id) 
+        {
+            return res.status(403).json({ message: 'Forbidden. You can only delete your own listings.' });
+        }
+        
+        await pet.deleteOne(); // Use .deleteOne() to trigger Mongoose middleware if any
+        
+        //  Also remove pet from user's listed_pets array
+        await User.findByIdAndUpdate(req.user.id, { $pull: { listed_pets: pet._id } });
+
+        res.status(200).json({ message: 'Pet listing deleted successfully.' });
+    } 
+    catch (err) 
+    {
+        res.status(500).json({ message: 'Error deleting pet listing.' });
     }
-
-    // Security check: Ensure the deleter is the owner.
-    if (pet.listed_by.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Forbidden: You can only delete your own listings.' });
-    }
-
-    await pet.deleteOne();
-
-    // Remove the pet from the user's list of pets.
-    await User.findByIdAndUpdate(req.user.id, { $pull: { listed_pets: pet._id } });
-
-    res.status(200).json({ message: 'Pet listing deleted successfully.' });
-  } catch (error) {
-    console.error('Error in deletePet:', error);
-    res.status(500).json({ message: 'Server error while deleting pet listing.' });
-  }
 };
