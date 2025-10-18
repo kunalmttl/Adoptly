@@ -18,7 +18,7 @@ const { getApplicationsForPet } = require('../controllers/applicationController'
 // #                            Public Routes                          #
 // #####################################################################
 // These can be accessed by anyone.
-router.get('/browse', getAllPets);
+router.get('/', getAllPets);
 router.get('/:id', getPetById); // Getting details for a single pet is public.
 
 
