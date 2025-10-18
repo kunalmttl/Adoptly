@@ -1,94 +1,83 @@
 // src/components/layout/ProfileSwitcher.tsx
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { User, Store } from 'lucide-react';
 
-import { useAuthStore } from "@/store/authStore";
-import { switchUserProfile } from "@/api/authAPI";
+import { useAuthStore } from '@/store/authStore';
+import { switchUserProfile } from '@/api/authAPI';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { User, Store } from "lucide-react";
-
-
-
-export function ProfileSwitcher() 
-{
+/**
+ * A dialog component that allows authenticated users to switch between
+ * their 'adopter' and 'seller' profiles.
+ */
+export function ProfileSwitcher() {
   const { user, setUser } = useAuthStore();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!user) return null; // Should not render if no user is logged in
+  // Do not render the component if there is no logged-in user.
+  if (!user) return null;
 
-  const handleProfileChange = async (newProfileType: 'adopter' | 'seller') => 
-  {
-    // If the selected profile is already the current one, just close the dialog and navigate.
-    if (newProfileType === user.profile_type) 
-    {
-        setIsOpen(false);
-        navigate(newProfileType === 'adopter' ? '/browse' : '/my-listings');
-        return;
+  /**
+   * Handles the logic for changing the user's profile type.
+   * @param newProfileType - The profile type to switch to.
+   */
+  const handleProfileChange = async (newProfileType: 'adopter' | 'seller') => {
+    // If the selected profile is the same as the current one, do nothing.
+    if (newProfileType === user.profile_type) {
+      setIsOpen(false);
+      return;
     }
 
-    try 
-    {
-        // Call the backend API to switch the profile
-        const { user: updatedUser } = await switchUserProfile();
-        
-        // Update the global state with the new user profile
-        setUser(updatedUser);
+    try {
+      // Call the backend API to perform the switch.
+      const { user: updatedUser } = await switchUserProfile();
+      // Update the global user state in Zustand.
+      setUser(updatedUser);
 
-        toast.success(`Profile switched to ${updatedUser.profile_type}!`);
-        setIsOpen(false); // Close the dialog
-        
-        // Navigate to the appropriate page
-        navigate(updatedUser.profile_type === 'adopter' ? '/browse' : '/my-listings');
+      toast.success(`Profile switched to ${updatedUser.profile_type}!`);
+      setIsOpen(false); // Close the dialog.
 
-    } 
-    catch (error) 
-    {
-        console.error("Failed to switch profile", error);
-        toast.error("Could not switch profile. Please try again.");
+      // Navigate to the most relevant page for the new profile type.
+      navigate(updatedUser.profile_type === 'adopter' ? '/browse' : '/my-listings');
+    } catch (error) {
+      console.error('Failed to switch profile', error);
+      toast.error('Could not switch profile. Please try again.');
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-full font-montserrat bg-black hover:bg-beige text-white" variant="outline">Change Profile</Button>
+        <Button className="rounded-full" variant="outline">
+          Change Profile
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Switch Your Profile</DialogTitle>
-          <DialogDescription>
-            Choose how you want to interact with Adoptly.
-          </DialogDescription>
+          <DialogDescription>Choose how you want to interact with Adoptly.</DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <ToggleGroup
             type="single"
             variant="outline"
             className="grid grid-cols-2 gap-4"
-            defaultValue={user.profile_type} // Set default from user's current profile
-            // onValueChange will trigger our API call logic
+            defaultValue={user.profile_type}
             onValueChange={(value: 'adopter' | 'seller') => {
-                if (value) handleProfileChange(value);
+              if (value) handleProfileChange(value);
             }}
           >
-            <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-beige data-[state=on]:text-black">
+            <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900">
               <User className="h-8 w-8" />
               <span className="text-sm font-medium">Adopter</span>
             </ToggleGroupItem>
-            <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-limegreen data-[state=on]:text-black">
+            <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-teal-100 data-[state=on]:text-teal-900">
               <Store className="h-8 w-8" />
               <span className="text-sm font-medium">Seller</span>
             </ToggleGroupItem>

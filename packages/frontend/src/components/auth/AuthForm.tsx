@@ -1,175 +1,200 @@
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { User, Store } from "lucide-react";
+// src/components/auth/AuthForm.tsx
 
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { User, Store } from 'lucide-react';
 
-// animation for form elements
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
+// --- Animation Variants for Framer Motion ---
 const formVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
 };
 
+// --- Zod Validation Schemas ---
 
-// form validation schema
-
-export const formSchema = z.object({
-        name: z.string().optional(),
-        email: z.string().email({message: 'Invalid email address'}),
-        password: z.string().min(8, 'Password must be at least 8 characters long'),
-        profile_type: z.enum(["adopter", "seller"], 
-        {
-                required_error: "You must select a profile type.",
-        }),
-
+// Schema for the Login form.
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z.string().min(1, 'Password is required'), // Simple check for login
 });
 
-export type AuthFormValues = z.infer<typeof formSchema>;
-// props for reusable form elements
+// Schema for the Register form, which includes more fields.
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters long'),
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  profile_type: z.enum(['adopter', 'seller'], {
+    required_error: 'You must select a profile type.',
+  }),
+});
 
+// A union type to represent the values for either form.
+export type AuthFormValues = z.infer<typeof loginSchema> | z.infer<typeof registerSchema>;
+
+// --- Component Props ---
 interface AuthFormProps {
-        formtype: 'login' | 'register';
-        onSubmit: (values: AuthFormValues) => void;
-};
-
-
-
-const AuthForm = ({formtype, onSubmit} : AuthFormProps) => {
-
-        const form = useForm<AuthFormValues>(
-        {
-                resolver: zodResolver(formSchema),
-                defaultValues: {
-                        name: '',
-                        email: '',
-                        password: '',
-                        profile_type: 'adopter',
-                },
-        })
-
-        // define what text will show based on form type
-        
-        const title = (formtype === 'register') ? "Register an Account" : "Welcome Back";
-        const description = (formtype === 'register') ? "Enter your details below to create your account." : "Enter your email and password to sign in.";
-        const buttonText = (formtype === 'register') ? "Create Account" : "Sign In";
-        const footerText = (formtype === 'register') ? "Already have an account?" : "Don't have an account?";
-        const footerLink = (formtype === 'register') ? "/login" : "/register";
-        const footerLinkText = (formtype === 'register') ? "Sign In" : "Sign Up";
-
-
-        return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-limegreen to-beige">
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-                        <Card className="w-200 max-w-sm justify-center">
-                                <CardHeader className="text-center">
-                                        <CardTitle className="font-poppins " > {title}</CardTitle>
-                                        <CardDescription className="font-montserrat text-xs"> {description} </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                        <Form {...form}>
-                                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                                        {formtype === 'register' && (
-                                                                <motion.div
-                                                                        initial="hidden"
-                                                                        animate="visible"
-                                                                        variants={formVariants}
-                                                                        transition={{ delay: 0.1 }}>
-                                                                        <FormField
-                                                                                control={form.control}
-                                                                                name="name"
-                                                                                render={({ field }) => (
-                                                                                        <FormItem>
-                                                                                                <FormLabel className="font-poppins text-[10px]">Name</FormLabel>
-                                                                                                <FormControl>
-                                                                                                        <Input {...field} placeholder="Enter your name" />
-                                                                                                </FormControl>
-                                                                                                <FormMessage />
-                                                                                        </FormItem>
-                                                                                )}/>
-                                                                </motion.div>
-                                                        )}
-                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
-                                                                <FormField
-                                                                        control={form.control}
-                                                                        name="email"
-                                                                        render={({ field }) => (
-                                                                        <FormItem>
-                                                                        <FormLabel className="font-poppins text-[10px]">Email</FormLabel>
-                                                                        <FormControl>
-                                                                                <Input className="font-montserrat size-xs" type="email" placeholder="you@example.com" {...field} />
-                                                                        </FormControl>
-                                                                        <FormMessage />
-                                                                        </FormItem>
-                                                                        )}/>
-                                                        </motion.div>
-                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
-                                                                <FormField
-                                                                control={form.control}
-                                                                name="password"
-                                                                render={({ field }) => (
-                                                                <FormItem>
-                                                                <FormLabel className="font-poppins text-[10px]">Password</FormLabel>
-                                                                <FormControl>
-                                                                        <Input type="password" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                                </FormItem>)}/>
-                                                        </motion.div>
-                
-                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.4 }}>
-                                                                <FormField
-                                                                        control={form.control}
-                                                                        name="profile_type"
-                                                                        render={({ field }) => (
-                                                                        <FormItem className="space-y-3 pt-2">
-                                                                                <FormLabel className="font-poppins text-[12px] text-center block"> Continue as </FormLabel>
-                                                                        <FormControl>
-                                                                        <ToggleGroup
-                                                                                type="single"
-                                                                                variant="outline"
-                                                                                className="grid grid-cols-2 gap-2 ml-22"
-                                                                                value={field.value}
-                                                                                onValueChange={field.onChange}>
-                
-                                                                                {/* Adopter Option */}
-                                                                                <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-beige data-[state=on]:text-black">
-                                                                                <User className="h-8 w-8" />
-                                                                                <span className="text-xs font-montserrat">Adopter</span>
-                                                                                </ToggleGroupItem>
-                
-                                                                                {/* Seller Option */}
-                                                                                <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-limegreen data-[state=on]:text-black">
-                                                                                <Store className="h-8 w-8" />
-                                                                                <span className="text-xs font-medium font-montserrat">Seller</span>
-                                                                                </ToggleGroupItem>
-                                                                        </ToggleGroup>
-                                                                        </FormControl>
-                                                                        <FormMessage />
-                                                                        </FormItem>
-                                                                        )}
-                                                                />
-                                                                </motion.div>
-                                                        <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.5 }}>
-                                                                <Button type="submit" className="w-full font-poppins">{buttonText}</Button>
-                                                        </motion.div>
-                                                </form>
-                                        </Form>
-                                </CardContent>
-                                <CardFooter className="flex justify-center text-xs font-montserrat">
-                                        <p>{footerText} <Link to={footerLink} className="font-semibold text-indigo-600 hover:underline">{footerLinkText}</Link></p>
-                                </CardFooter>
-                        </Card>
-                </motion.div>
-        </div>
-        )
+  /** Determines if the form is for 'login' or 'register'. */
+  formtype: 'login' | 'register';
+  /** Callback function to handle form submission. */
+  onSubmit: (values: AuthFormValues) => void;
+  /** A flag to indicate if the form is currently submitting. */
+  isSubmitting: boolean;
 }
 
-export default AuthForm
+/**
+ * A reusable and animated authentication form for both user registration and login.
+ * It uses react-hook-form for state management and zod for validation.
+ */
+const AuthForm = ({ formtype, onSubmit, isSubmitting }: AuthFormProps) => {
+  // CRITICAL FIX: Select the correct validation schema based on the form type.
+  const currentSchema = formtype === 'register' ? registerSchema : loginSchema;
+
+  const form = useForm<AuthFormValues>({
+    resolver: zodResolver(currentSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      // Set a default profile_type for the registration form.
+      profile_type: 'adopter',
+    },
+  });
+
+  // --- Dynamic Content based on formtype ---
+  const isRegister = formtype === 'register';
+  const title = isRegister ? 'Create an Account' : 'Welcome Back';
+  const description = isRegister ? 'Enter your details to get started.' : 'Sign in to continue.';
+  const buttonText = isRegister ? 'Create Account' : 'Sign In';
+  const footerText = isRegister ? 'Already have an account?' : "Don't have an account?";
+  const footerLink = isRegister ? '/login' : '/register';
+  const footerLinkText = isRegister ? 'Sign In' : 'Sign Up';
+
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
+      <Card className="w-full max-w-sm border-none shadow-none">
+        <CardHeader className="text-center">
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* --- Name Field (Register only) --- */}
+              {isRegister && (
+                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+              )}
+
+              {/* --- Email Field --- */}
+              <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              {/* --- Password Field --- */}
+              <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              {/* --- Profile Type Toggle (Register only) --- */}
+              {isRegister && (
+                <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.4 }}>
+                  <FormField
+                    control={form.control}
+                    name="profile_type"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3 pt-2">
+                        <FormLabel className="text-center block">I am joining as an...</FormLabel>
+                        <FormControl>
+                          <ToggleGroup
+                            type="single"
+                            variant="outline"
+                            className="grid grid-cols-2 gap-2"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <ToggleGroupItem value="adopter" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-orange-100 data-[state=on]:text-orange-900">
+                              <User className="h-8 w-8" />
+                              <span className="text-xs font-medium">Adopter</span>
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="seller" className="h-auto flex flex-col gap-2 p-4 data-[state=on]:bg-teal-100 data-[state=on]:text-teal-900">
+                              <Store className="h-8 w-8" />
+                              <span className="text-xs font-medium">Seller</span>
+                            </ToggleGroupItem>
+                          </ToggleGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+              )}
+
+              {/* --- Submit Button --- */}
+              <motion.div variants={formVariants} initial="hidden" animate="visible" transition={{ delay: 0.5 }}>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? 'Processing...' : buttonText}
+                </Button>
+              </motion.div>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex justify-center text-sm">
+          <p>
+            {footerText}{' '}
+            <Link to={footerLink} className="font-semibold text-indigo-600 hover:underline">
+              {footerLinkText}
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </motion.div>
+  );
+};
+
+export default AuthForm;

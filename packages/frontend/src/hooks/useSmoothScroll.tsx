@@ -3,32 +3,41 @@
 import { useEffect } from 'react';
 import Lenis from '@studio-freight/lenis';
 
-const useSmoothScroll = () => 
-{
-  // We use useEffect to initialize and clean up Lenis
-        useEffect(() => 
-        {
-                // Initialize Lenis with some nice default options
-                const lenis = new Lenis(
-                {
-                        duration: 1.2,
-                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // A nice ease-out curve
-                });
+/**
+ * A custom hook to initialize and manage a smooth scrolling experience
+ * for the entire application using the Lenis library.
+ *
+ * This hook should be called once in a top-level component (like App.tsx)
+ * to apply the effect globally.
+ */
+const useSmoothScroll = () => {
+  useEffect(() => {
+    // Initialize a new Lenis instance with custom easing options for a smooth effect.
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // A standard ease-out curve
+    });
 
-                // This function is called on every animation frame
-                function raf(time: number) 
-                {
-                        lenis.raf(time);
-                        requestAnimationFrame(raf);
-                }
+    /**
+     * The animation loop function.
+     * On each animation frame, it tells Lenis to update the scroll position.
+     * @param {number} time The current time provided by requestAnimationFrame.
+     */
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
 
-                // Start the animation loop
-                requestAnimationFrame(raf);
+    // Start the animation loop.
+    requestAnimationFrame(raf);
 
-                // Cleanup function: This is crucial.
-                // It runs when the component unmounts to destroy the Lenis instance.
-                return () => {lenis.destroy();};
-        }, []); // The empty dependency array ensures this runs only once
+    // The cleanup function. This is crucial for preventing memory leaks.
+    // It runs when the component that uses this hook unmounts, ensuring
+    // the Lenis instance and its animation loop are properly destroyed.
+    return () => {
+      lenis.destroy();
+    };
+  }, []); // The empty dependency array ensures this effect runs only once when the app mounts.
 };
 
 export default useSmoothScroll;

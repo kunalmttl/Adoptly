@@ -1,28 +1,41 @@
-// # User Navigation Dropdown Component
+// src/components/layout/UserNav.tsx
 
-import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/store/authStore";
-import toast from "react-hot-toast";
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { useAuthStore } from '@/store/authStore';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
+/**
+ * A dropdown menu component for authenticated users.
+ * It displays the user's avatar and provides links to profile-specific pages
+ * and a logout action.
+ */
 export function UserNav() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
+  /**
+   * Handles the user logout process.
+   */
   const handleLogout = () => {
     logout();
-    toast.success("You have been logged out.");
-    navigate("/");
+    toast.success('You have been logged out.');
+    navigate('/');
   };
 
-  if (!user || !user.name) {
+  // Do not render if there is no user or the user object is incomplete.
+  if (!user?.name) {
     return null;
   }
 
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
+  // Generate initials from the user's name for the avatar fallback.
+  const initials = user.name
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
 
   return (
     <DropdownMenu>
@@ -37,52 +50,50 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none font-montserrat">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground font-mono">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
-        
+
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuGroup>
           <Link to="/settings">
-            <DropdownMenuItem className="font-montserrat">User Settings</DropdownMenuItem>
+            <DropdownMenuItem>User Settings</DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
-        
-        {/* ! FIX: Conditionally render the entire Adopter section */}
+
+        {/* Conditionally render the Adopter-specific menu items. */}
         {user.profile_type === 'adopter' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground font-poppins">Adopter</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">Adopter</DropdownMenuLabel>
             <Link to="/my-applications">
-              <DropdownMenuItem className="font-montserrat">My Applications</DropdownMenuItem>
+              <DropdownMenuItem>My Applications</DropdownMenuItem>
             </Link>
             <Link to="/browse">
-              <DropdownMenuItem className="font-montserrat">Rehome a Pet</DropdownMenuItem>
+              <DropdownMenuItem>Rehome a Pet</DropdownMenuItem>
             </Link>
           </>
         )}
-        
-        {/* =-= This logic was already correct */}
+
+        {/* Conditionally render the Seller-specific menu items. */}
         {user.profile_type === 'seller' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground font-poppins">Seller</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">Seller</DropdownMenuLabel>
             <Link to="/my-listings">
-              <DropdownMenuItem className="font-montserrat">My Listings</DropdownMenuItem>
+              <DropdownMenuItem>My Listings</DropdownMenuItem>
             </Link>
             <Link to="/sell">
-              <DropdownMenuItem className="font-montserrat">List A Pet</DropdownMenuItem>
+              <DropdownMenuItem>List a Pet</DropdownMenuItem>
             </Link>
           </>
         )}
-        
+
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem className="font-montserrat" onClick={handleLogout}>
-          Log out
-        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

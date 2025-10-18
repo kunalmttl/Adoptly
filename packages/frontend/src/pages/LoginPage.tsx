@@ -1,43 +1,43 @@
-// # Login Page
+// src/pages/LoginPage.tsx
 
-import AuthForm, { type AuthFormValues } from "@/components/auth/AuthForm";
-import { isAxiosError } from "axios"; 
-import { loginUser } from "@/api/authAPI";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useAuthStore } from "@/store/authStore"; // * Import the auth store
-import type { User } from "@/store/authStore";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { isAxiosError } from 'axios';
 
+import AuthForm, { type AuthFormValues } from '@/components/auth/AuthForm';
+import { loginUser } from '@/api/authAPI';
+import { useAuthStore } from '@/store/authStore';
+import type { User } from '@/store/authStore';
+
+/**
+ * The page component for user login.
+ * It renders the reusable AuthForm and handles the login logic.
+ */
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { setUser } = useAuthStore(); // * Get the setUser function from the store
+  const { setUser } = useAuthStore();
 
+  /**
+   * Handles the form submission for logging in a user.
+   * @param values - The form data (email and password).
+   */
   const handleLogin = async (values: AuthFormValues) => {
     try {
-      // ! FIX: This now returns the full LoginResponse with user and token
       const response = await loginUser(values);
-      
-      // * Set the user in the global state
+      // Set the user data in the global Zustand store.
       setUser(response.user as User);
 
       toast.success(`Welcome back, ${response.user.name}!`);
-      
-      // * Navigate directly to the browse page
+      // Redirect to the main browsing page on successful login.
       navigate('/browse');
-
     } catch (error) {
-      let errorMessage = "An unexpected error occurred. Please try again.";
-      if (isAxiosError(error)) {
-        errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-      }
-      console.error("Login failed:", error);
+      const errorMessage = isAxiosError(error) ? error.response?.data?.message : 'Login failed. Please try again.';
+      console.error('Login failed:', error);
       toast.error(errorMessage);
     }
   };
 
-  return (
-    <AuthForm formtype="login" onSubmit={handleLogin} />
-  );
+  return <AuthForm formtype="login" onSubmit={handleLogin} isSubmitting={false} />;
 };
 
 export default LoginPage;

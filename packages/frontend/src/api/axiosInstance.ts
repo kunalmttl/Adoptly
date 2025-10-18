@@ -1,55 +1,51 @@
-// # Axios Instance with Interceptor
+// src/api/axiosInstance.ts
 
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
-
+// Determine the API base URL based on the environment (development vs. production).
+// In development, it points to the local backend server.
+// In production, it uses the URL defined in your hosting environment variables.
 const baseURL = import.meta.env.DEV
   ? 'http://localhost:3000/api/v1'
-  : import.meta.env.VITE_API_URL;     
+  : import.meta.env.VITE_API_URL;
 
-console.log("Base URL for Axios:", baseURL);
-
-// * Create an Axios instance with a predefined base URL
+/**
+ * A pre-configured Axios instance.
+ * This instance includes the base URL for all API requests and is set up
+ * to automatically send cookies (like the JWT auth token) with each request.
+ */
 const axiosInstance = axios.create({
   baseURL,
-  withCredentials: true, 
+  withCredentials: true, // Crucial for sending httpOnly cookies with requests.
 });
 
-// ! NEW: Add a request interceptor to handle authentication state.
-// ? This function will run before every single request is sent by Axios.
-axiosInstance.interceptors.request.use(
-  (config) => {
-    // =-= This is a good place to add logic if you were using header-based tokens.
-    // =-= For httpOnly cookies, the main benefit is ensuring a clean state.
-    // =-= The browser handles attaching the cookie automatically, but this interceptor
-    // =-= helps prevent issues with stale configurations.
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// * NEW: Add a response interceptor to handle global 401 errors.
-// ? This function will run whenever we receive a response from the backend.
+/**
+ * Axios Response Interceptor.
+ * This function runs globally after every API response is received.
+ * Its primary purpose here is to handle authentication errors gracefully.
+ */
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // * If the request was successful, just return the response.
-    return response;
-  },
+  // If the response is successful (status 2xx), simply pass it through.
+  (response) => response,
+
+  // If the response has an error, inspect it.
   (error) => {
-    // # Check if the error is a 401 Unauthorized.
+    // Check if the error is a 401 Unauthorized response.
+    // This indicates an invalid or expired session (e.g., JWT cookie is missing or invalid).
     if (error.response && error.response.status === 401) {
-      // =-= This means the user's session is invalid (e.g., cookie expired or tampered with).
-      // =-= The safest action is to log the user out on the frontend to re-sync the state.
-      console.warn("Received 401 Unauthorized. Logging out user.");
-      useAuthStore.getState().logout(); // ? Access the logout function directly from the store.
-      
-      // =-= Optionally, redirect to the login page.
+      console.warn('Received 401 Unauthorized response. Logging out user to sync state.');
+
+      // Access the auth store and trigger the logout action.
+      // This will clear the user state on the frontend, ensuring UI consistency.
+      useAuthStore.getState().logout();
+
+      // Optionally, you could force a redirect to the login page here:
       // window.location.href = '/login';
     }
-    // * Return the error so that individual .catch() blocks can still handle it.
+
+    // IMPORTANT: Reject the promise to ensure that the error can still be
+    // caught and handled by the specific component or hook that made the API call.
     return Promise.reject(error);
   }
 );

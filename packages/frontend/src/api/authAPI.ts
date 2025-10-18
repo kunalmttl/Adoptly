@@ -3,75 +3,78 @@
 import axiosInstance from './axiosInstance';
 import type { User } from '@/store/authStore';
 
+// --- Type Definitions for API Payloads and Responses ---
 
-// Define the shape of the data for our requests
-// We can import this type from AuthForm.tsx later for consistency
-interface AuthValues 
-{
-    name?: string;
-    email: string;
-    password: string;
-    profile_type?: 'adopter' | 'seller';
-
+/**
+ * Defines the shape of data required for registration and login.
+ * All fields are optional to allow for reuse in different forms (e.g., login only needs email/password).
+ */
+export interface AuthFormData {
+  name?: string;
+  email: string;
+  password: string;
+  profile_type?: 'adopter' | 'seller';
 }
 
-
+/**
+ * The expected response from the backend after initiating registration.
+ * The backend sends back the user's email to be used in the OTP verification step.
+ */
 interface OtpInitiationResponse {
   message: string;
   email: string;
 }
 
-
-interface LoginResponse {
+/**
+ * The expected response after a successful login or OTP verification.
+ * Contains the auth token (though we use cookies) and the user's profile data.
+ */
+export interface AuthSuccessResponse {
   message: string;
   token: string;
   user: User;
 }
 
+// --- API Functions ---
 
 /**
- * * Initiates the registration process by sending user details to the backend.
- * ? On success, the backend sends an OTP to the user's email.
- * @param userData - The user's registration details.
- * @returns A promise that resolves with a message and the user's email.
+ * Sends user registration data to the backend to initiate the OTP process.
+ * @param userData - The user's registration details (name, email, password, profile_type).
+ * @returns A promise that resolves with the backend's confirmation message and the user's email.
  */
-export const registerUser = async (userData: AuthValues): Promise<OtpInitiationResponse> => {
-    const response = await axiosInstance.post('/auth/register', userData);
-    return response.data;
+export const registerUser = async (userData: AuthFormData): Promise<OtpInitiationResponse> => {
+  const response = await axiosInstance.post('/auth/register', userData);
+  return response.data;
 };
-
-
 
 /**
- * * Logs in a user by sending credentials to the backend.
- * ? On success, the backend returns a JWT and the full user object.
- * @param credentials - The user's login credentials.
- * @returns A promise that resolves with the final login data.
+ * Sends the user's email and OTP to the backend for verification.
+ * If successful, the user is considered authenticated.
+ * @param email - The user's email address.
+ * @param otp - The 6-digit OTP code entered by the user.
+ * @returns A promise that resolves with the full authentication response, including user data.
  */
-export const loginUser = async (credentials: AuthValues): Promise<LoginResponse> => {
-    const response = await axiosInstance.post('/auth/login', credentials);
-    return response.data;
+export const verifyOtp = async (email: string, otp: string): Promise<AuthSuccessResponse> => {
+  const response = await axiosInstance.post('/auth/verify-otp', { email, otp });
+  return response.data;
 };
-
-
 
 /**
- * * NEW: Sends the user's email and OTP to the backend for verification.
- * ? On success, the backend returns a JWT and the full user object.
- * @param email - The user's email.
- * @param otp - The 6-digit OTP code.
- * @returns A promise that resolves with the final login data.
+ * Sends user credentials to the backend for login.
+ * @param credentials - The user's login details (email, password).
+ * @returns A promise that resolves with the full authentication response.
  */
-export const verifyOtp = async (email: string, otp: string): Promise<LoginResponse> => {
-    const response = await axiosInstance.post('/auth/verify-otp', { email, otp });
-    return response.data;
+export const loginUser = async (credentials: AuthFormData): Promise<AuthSuccessResponse> => {
+  const response = await axiosInstance.post('/auth/login', credentials);
+  return response.data;
 };
 
-
-// Switch Profile Function
-export const switchUserProfile = async () => {
-    // We don't need to send any data in the body, as the backend
-    // identifies the user via their auth token (in the cookie).
-    const response = await axiosInstance.put('/users/me/switch-profile');
-    return response.data;
+/**
+ * Sends a request to the backend to switch the user's profile type (adopter <-> seller).
+ * The backend identifies the user via the authentication cookie.
+ * @returns A promise that resolves with the updated user data.
+ */
+export const switchUserProfile = async (): Promise<{ message: string; user: User }> => {
+  const response = await axiosInstance.put('/users/me/switch-profile');
+  return response.data;
 };

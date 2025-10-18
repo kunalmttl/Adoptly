@@ -1,79 +1,70 @@
-// # Application API for Adoption Applications
+// src/api/applicationAPI.ts
 
 import axiosInstance from './axiosInstance';
 import type { Pet } from './petAPI';
+// We no longer need the User type directly for Applicant
+// import type { User } from '@/store/authStore';
 
+// --- Type Definitions ---
 
+/**
+ * Represents the user who has applied for a pet.
+ *
+ * FIXED: Defined this type explicitly to ensure 'contact' is 'string | undefined',
+ * resolving downstream 'ReactNode' errors.
+ */
 export interface Applicant {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   contact?: string;
   picture?: string;
 }
 
+/**
+ * The data required to submit a new adoption application.
+ */
 export interface ApplicationFormData {
   petId: string;
   adoption_intent: string;
   pet_location_plan: string;
 }
 
-
-export interface ApplicationWithDetails {
-    _id: string;
-    status: 'pending' | 'approved' | 'rejected';
-    adoption_intent: string;
-    pet_location_plan: string;
-    pet: Pet; // =-= Used for the "My Applications" page (adopter's view)
-    applicant: Applicant; // =-= Used for the "View Applications" page (seller's view)
-    createdAt: string;
+/**
+ * The comprehensive structure of an application object returned from the API.
+ * It includes populated details about the pet and the applicant.
+ */
+export interface Application {
+  _id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  adoption_intent: string;
+  pet_location_plan: string;
+  pet: Pet;
+  applicant: Applicant;
+  createdAt: string;
 }
 
+// --- API Functions (No changes needed below) ---
 
-
-// * Interface for the data returned by the 'getMyApplications' endpoint
-export interface ApplicationWithPet 
-{
-    _id: string;
-    status: 'pending' | 'approved' | 'rejected';
-    adoption_intent: string;
-    pet_location_plan: string;
-    pet: Pet; // =-= The populated pet object
-    createdAt: string;
-}
-
-
-// * Send adoption application
-export const applyForAdoption = async (data: ApplicationFormData) => {
+export const applyForAdoption = async (data: ApplicationFormData): Promise<Application> => {
   const response = await axiosInstance.post('/applications', data);
   return response.data;
 };
 
-// * Get current user's adoption applications
-export const getMyApplications = async () => {
+export const getMyApplications = async (): Promise<Application[]> => {
   const response = await axiosInstance.get('/applications/mine');
   return response.data;
 };
 
-export const getApplicationsForPet = async (petId: string): Promise<ApplicationWithDetails[]> => {
-  // =-= This endpoint now matches our new backend route
+export const getApplicationsForPet = async (petId: string): Promise<Application[]> => {
   const response = await axiosInstance.get(`/pets/${petId}/applications`);
   return response.data;
 };
 
-
-/**
- * * NEW: Sends a request to update an application's status.
- * @param applicationId - The ID of the application to update.
- * @param status - The new status ('approved' or 'rejected').
- * @returns A promise that resolves with the updated application data.
- */
 export const updateApplicationStatus = async (
   applicationId: string,
   status: 'approved' | 'rejected'
-): Promise<ApplicationWithDetails> => 
-  {
-  // =-= The endpoint matches our new backend route
+): Promise<Application> => {
   const response = await axiosInstance.patch(`/applications/${applicationId}`, { status });
   return response.data;
 };

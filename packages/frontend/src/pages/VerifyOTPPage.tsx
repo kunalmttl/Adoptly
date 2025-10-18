@@ -1,69 +1,68 @@
-// # OTP Verification Page
+// src/pages/VerifyOTPPage.tsx
 
-import { useLocation, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import { isAxiosError } from "axios";
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { isAxiosError } from 'axios';
+import { Loader2 } from 'lucide-react';
 
-import { verifyOtp } from "@/api/authAPI";
-import { useAuthStore } from "@/store/authStore";
-import type { User } from "@/store/authStore";
+import { verifyOtp } from '@/api/authAPI';
+import { useAuthStore, type User } from '@/store/authStore';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Button } from '@/components/ui/button';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
-
-// * Zod schema for the OTP form
+// Zod schema for the 6-digit OTP.
 const otpFormSchema = z.object({
-  otp: z.string().min(6, { message: "Your one-time password must be 6 characters." }),
+  otp: z.string().min(6, { message: 'Your one-time password must be 6 characters.' }),
 });
 
+type OtpFormValues = z.infer<typeof otpFormSchema>;
+
+/**
+ * The page for verifying the user's email via a One-Time Password (OTP).
+ */
 export default function VerifyOtpPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setUser } = useAuthStore();
 
-  // =-= Get the email passed from the previous (login/register) page
+  // Retrieve the email passed from the registration page.
   const email = location.state?.email;
 
-  // ? If the user lands here directly without an email, redirect them to login.
+  // Effect to guard the route: if no email is present, redirect to login.
   useEffect(() => {
     if (!email) {
+      toast.error('Verification session expired. Please try again.');
       navigate('/login', { replace: true });
     }
   }, [email, navigate]);
 
-
-  const form = useForm<z.infer<typeof otpFormSchema>>({
+  const form = useForm<OtpFormValues>({
     resolver: zodResolver(otpFormSchema),
-    defaultValues: { otp: "" },
+    defaultValues: { otp: '' },
   });
 
-  const onSubmit = async (data: z.infer<typeof otpFormSchema>) => {
+  const onSubmit = async (data: OtpFormValues) => {
     const submissionPromise = verifyOtp(email, data.otp);
 
     toast.promise(submissionPromise, {
       loading: 'Verifying OTP...',
       success: (response) => {
-        // =-= On successful verification, set the user state and redirect
         setUser(response.user as User);
         navigate('/browse');
         return `Welcome, ${response.user.name}!`;
       },
-      error: (err) => {
-        // =-= Provide a specific error message from the backend if available
-        if (isAxiosError(err)) {
-          return err.response?.data?.message || "An unexpected error occurred.";
-        }
-        return "Verification failed. Please try again.";
-      },
+      error: (err) => (isAxiosError(err) ? err.response?.data?.message : 'Verification failed. Please try again.'),
     });
   };
+
+  // Render nothing until the redirect effect has a chance to run.
+  if (!email) return null;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50">
@@ -75,27 +74,18 @@ export default function VerifyOtpPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="otp"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="sr-only">One-Time Password</FormLabel>
-                    <FormControl>
-                      <InputOTP maxLength={6} {...field}>
-                        <InputOTPGroup className="mx-auto">
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <FormField control={form.control} name="otp" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">One-Time Password</FormLabel>
+                  <FormControl>
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup className="mx-auto">
+                        {[...Array(6)].map((_, i) => <InputOTPSlot key={i} index={i} />)}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
+                </FormItem>
+              )} />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Verify Account
