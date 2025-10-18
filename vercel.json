@@ -22,7 +22,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/packages/frontend/index.html" 
+      "dest": "/packages/frontend"
     }
   ]
 }
