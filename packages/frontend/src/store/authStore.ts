@@ -3,57 +3,34 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/**
- * Defines the shape of the User object that will be stored globally.
- * This represents the currently authenticated user.
- */
-export interface User {
+
+// Define the shape of our user and the store's state
+export interface User 
+{
   id: string;
   name: string;
   email: string;
   profile_type: 'adopter' | 'seller';
-  picture?: string;
-  // Add other user properties here as needed, e.g., contact, bio
-  contact?: string;
-  bio?: string;
+  picture?: string; 
 }
 
-/**
- * Defines the complete state and actions for the authentication store.
- */
-interface AuthState {
-  /** The current user object, or null if no user is authenticated. */
+interface AuthState 
+{
   user: User | null;
-  /** A function to set or update the authenticated user. */
   setUser: (user: User | null) => void;
-  /** A function to clear the authenticated user, effectively logging them out. */
   logout: () => void;
 }
 
-/**
- * The global Zustand store for managing authentication state.
- *
- * It uses the `persist` middleware to automatically save the user's session
- * to the browser's localStorage. This allows the user to stay logged in
- * even after refreshing the page or closing the browser tab.
- */
+// Create the store with persist middleware to save state in localStorage
 export const useAuthStore = create<AuthState>()(
   persist(
-    // The `set` function is provided by Zustand and is used to update the state.
     (set) => ({
-      // Initial state: no user is logged in.
       user: null,
-
-      // Action to set or update the user.
       setUser: (user) => set({ user }),
-
-      // Action to log the user out by clearing the user object.
       logout: () => set({ user: null }),
     }),
     {
-      // Configuration for the persist middleware.
-      name: 'auth-storage', // The key that will be used in localStorage.
-      // By default, it uses localStorage. You can configure other storage options here.
+      name: 'auth-storage', // The key to use in localStorage
     }
   )
 );

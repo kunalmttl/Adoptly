@@ -1,13 +1,25 @@
-// src/components/pets/PetInfo.tsx
-
-import { PawPrint, Dog, Cat, Bird, Rabbit, Cake, HeartPulse, Ruler, Weight, DollarSign, ShieldCheck, AlertTriangle } from 'lucide-react';
+// # Pet Info Display Component
 
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { PetDetailItem } from './PetDetailItem';
+import { PetDetailItem } from './PetDetailItem'; // * Import the new component
 import type { Pet } from '@/api/petAPI';
 
-// A mapping of species names to their corresponding Lucide icon components.
+import { 
+  PawPrint, 
+  Dog, 
+  Cat, 
+  Bird, 
+  Rabbit,
+  Cake,
+  HeartPulse,
+  Ruler,
+  Weight,
+  DollarSign,
+  ShieldCheck,
+  AlertTriangle
+} from 'lucide-react';
+
 const speciesIcons = {
   dog: <Dog className="mr-2 h-5 w-5" />,
   cat: <Cat className="mr-2 h-5 w-5" />,
@@ -16,28 +28,24 @@ const speciesIcons = {
   other: <PawPrint className="mr-2 h-5 w-5" />,
 };
 
-/**
- * A component that displays all the detailed information about a pet,
- * organized into logical sections.
- */
 export const PetInfo = ({ pet }: { pet: Pet }) => {
   return (
-    <div className="space-y-6">
-      {/* --- Header Section --- */}
+    <div className="space-y-6 font-montserrat">
+      {/* # Header Section */}
       <div>
         <div className="flex items-center gap-2 text-sm text-neutral-500 uppercase tracking-wide">
           {speciesIcons[pet.species.toLowerCase() as keyof typeof speciesIcons] || speciesIcons.other}
           <span>{pet.species}</span>
         </div>
-        <h1 className="mt-2 text-4xl font-bold text-neutral-900">{pet.name}</h1>
+        <h1 className="mt-2 text-4xl font-poppins font-bold text-neutral-900">{pet.name}</h1>
         <p className="mt-1 text-lg text-neutral-600">{pet.breed}</p>
       </div>
 
       <Separator />
 
-      {/* --- About Section --- */}
+      {/* # About Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">About {pet.name}</h3>
+        <h3 className="text-lg font-poppins font-semibold">About {pet.name}</h3>
         <div className="grid grid-cols-2 gap-x-4 gap-y-6">
           <PetDetailItem icon={<Cake size={20} />} label="Age" value={pet.age ? `${pet.age} years` : 'N/A'} />
           <PetDetailItem icon={<HeartPulse size={20} />} label="Gender" value={pet.gender ? pet.gender.charAt(0).toUpperCase() + pet.gender.slice(1) : 'N/A'} />
@@ -49,9 +57,9 @@ export const PetInfo = ({ pet }: { pet: Pet }) => {
 
       <Separator />
 
-      {/* --- Health & Wellness Section --- */}
+      {/* # Health & Wellness Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Health & Wellness</h3>
+        <h3 className="text-lg font-poppins font-semibold">Health & Wellness</h3>
         <div className="grid grid-cols-2 gap-x-4 gap-y-6">
           <PetDetailItem icon={<ShieldCheck size={20} />} label="Vaccinated" value={pet.health_status.vaccinated ? 'Yes' : 'No'} />
           <PetDetailItem icon={<AlertTriangle size={20} />} label="Special Needs" value={pet.health_status.special_needs ? 'Yes' : 'No'} />
@@ -60,22 +68,22 @@ export const PetInfo = ({ pet }: { pet: Pet }) => {
 
       <Separator />
 
-      {/* --- Adoption Details Section --- */}
+      {/* # Adoption Details Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Adoption Details</h3>
+        <h3 className="text-lg font-poppins font-semibold">Adoption Details</h3>
         <div className="grid grid-cols-2 gap-4">
-          <PetDetailItem icon={<DollarSign size={20} />} label="Adoption Fee" value={`$${pet.adoption_fee}`} />
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 text-neutral-700">
-              <PawPrint size={20} />
+            <PetDetailItem icon={<DollarSign size={20} />} label="Adoption Fee" value={`$${pet.adoption_fee}`} />
+            <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-beige text-neutral-700">
+                    <PawPrint size={20} />
+                </div>
+                <div>
+                    <p className="text-sm text-neutral-500">Status</p>
+                    <Badge className="capitalize text-sm" variant={pet.status === 'available' ? 'default' : 'secondary'}>
+                      {pet.status}
+                    </Badge>
+                </div>
             </div>
-            <div>
-              <p className="text-sm text-neutral-500">Status</p>
-              <Badge className="capitalize text-sm" variant={pet.status === 'available' ? 'default' : 'secondary'}>
-                {pet.status}
-              </Badge>
-            </div>
-          </div>
         </div>
       </div>
     </div>

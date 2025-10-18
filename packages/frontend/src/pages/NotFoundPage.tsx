@@ -1,25 +1,24 @@
-// src/pages/NotFoundPage.tsx
+// # 404 Not Found Page
 
-import { Link } from 'react-router-dom';
-import { Home } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Home } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-
-/**
- * A user-friendly 404 "Not Found" page that is displayed when a user
- * navigates to a route that does not exist.
- */
 export default function NotFoundPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <CardTitle className="text-8xl font-black text-neutral-300">404</CardTitle>
-          <CardDescription className="text-2xl font-semibold text-neutral-800">Page Not Found</CardDescription>
+          <CardDescription className="text-2xl font-semibold text-neutral-800">
+            Page Not Found
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-neutral-600">Sorry, we couldn't find the page you were looking for. It might have been moved or deleted.</p>
+          <p className="text-neutral-600">
+            Sorry, we couldn't find the page you were looking for. It might have been moved or deleted.
+          </p>
         </CardContent>
         <div className="p-6 pt-0">
           <Link to="/">

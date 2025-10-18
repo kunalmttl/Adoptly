@@ -1,92 +1,121 @@
-// src/pages/ApplyForAdoptionPage.tsx
+// # Apply for Adoption Page
 
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner"; // * Import Sonner for toasts
 
-import { applyForAdoption } from '@/api/applicationAPI';
-import { getPetById, type Pet } from '@/api/petAPI';
-import { useAuthStore } from '@/store/authStore';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { applyForAdoption } from "@/api/applicationAPI";
+import { getPetById, type Pet } from "@/api/petAPI";
+import { useAuthStore } from "@/store/authStore";
 
-// Zod schema for validating the application form.
-const applicationSchema = z.object({
-  adoption_intent: z.string().min(10, 'Please explain your intent to adopt in at least 10 characters.'),
-  pet_location_plan: z.string().min(5, 'Please describe where the pet will stay.'),
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
+
+// # Zod schema for form validation
+const schema = z.object({
+  adoption_intent: z.string().min(10, "Please explain your intent to adopt."),
+  pet_location_plan: z.string().min(5, "Please describe where the pet will stay."),
 });
 
-type ApplicationFormValues = z.infer<typeof applicationSchema>;
+type FormType = z.infer<typeof schema>;
 
-/**
- * The page where a user can fill out and submit an adoption application for a specific pet.
- */
 export default function ApplyForAdoptionPage() {
   const { id: petId } = useParams<{ id: string }>();
   const [pet, setPet] = useState<Pet | null>(null);
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  const form = useForm<ApplicationFormValues>({
-    resolver: zodResolver(applicationSchema),
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      adoption_intent: '',
-      pet_location_plan: '',
+      adoption_intent: "",
+      pet_location_plan: "",
     },
   });
 
-  // Effect to fetch the details of the pet being applied for.
   useEffect(() => {
     if (!petId) return;
-    getPetById(petId).then(setPet).catch(() => setPet(null));
+    getPetById(petId)
+      .then(setPet)
+      .catch(() => setPet(null));
   }, [petId]);
 
-  const onSubmit = async (data: ApplicationFormValues) => {
+  // * Handle form submission
+  const onSubmit = async (data: FormType) => {
     if (!petId) return;
+
+    // =-= Use toast.promise for a better UX
     toast.promise(applyForAdoption({ petId, ...data }), {
       loading: 'Submitting your application...',
       success: () => {
-        navigate('/my-applications');
+        // ? On success, navigate the user to their applications page
+        navigate("/my-applications");
         return 'Application submitted! The seller will be notified.';
       },
       error: 'Failed to submit application. Please try again.',
     });
   };
 
+  // # Show loading or missing pet
   if (!pet) {
-    return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="bg-orange-50 min-h-screen flex items-center justify-center py-16 px-4">
+    <div className="bg-orange-50 min-h-screen flex items-center justify-center py-16">
       <Card className="w-full max-w-xl">
-        <CardHeader><CardTitle>Apply for Adoption of {pet.name}</CardTitle></CardHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-6">
-              <div><FormLabel>Full Name</FormLabel><Input value={user?.name || ''} disabled /></div>
-              <div><FormLabel>Email</FormLabel><Input value={user?.email || ''} disabled /></div>
-              <FormField control={form.control} name="adoption_intent" render={({ field }) => (
-                <FormItem><FormLabel>Why do you want to adopt this pet?</FormLabel><FormControl><Textarea placeholder="Describe your motivation and suitability..." rows={4} {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="pet_location_plan" render={({ field }) => (
-                <FormItem><FormLabel>Where will the pet stay?</FormLabel><FormControl><Textarea placeholder="Describe your home or where the pet will live..." rows={3} {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-            </CardContent>
+        <CardHeader>
+          <CardTitle>Apply for Adoption of {pet.name}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+            <div>
+              <label className="block mb-1 font-semibold">Full Name</label>
+              <Input value={user?.name || ""} disabled />
+            </div>
+            <div>
+              <label className="block mb-1 font-semibold">Email</label>
+              <Input value={user?.email || ""} disabled />
+            </div>
+            <div>
+              <label className="block mb-1 font-semibold">
+                Why do you want to adopt this pet?
+              </label>
+              <Textarea
+                {...form.register("adoption_intent")}
+                placeholder="Describe your motivation and suitability..."
+                rows={4}
+              />
+              <span className="text-xs text-red-500">{form.formState.errors.adoption_intent?.message}</span>
+            </div>
+            <div>
+              <label className="block mb-1 font-semibold">
+                Where will the pet stay?
+              </label>
+              <Textarea
+                {...form.register("pet_location_plan")}
+                placeholder="Describe your home or where the pet will live..."
+                rows={3}
+              />
+              <span className="text-xs text-red-500">{form.formState.errors.pet_location_plan?.message}</span>
+            </div>
             <CardFooter>
               <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
-                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Submit Application'}
+                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Application"}
               </Button>
             </CardFooter>
           </form>
-        </Form>
+        </CardContent>
       </Card>
     </div>
   );

@@ -1,11 +1,10 @@
 // src/components/Header/Curve/style.module.scss
-
 .svgCurve {
-  position: absolute;
-  top: 0;
-  left: -99px; // Hides the curve by positioning it just off-screen.
-  width: 100px;
-  height: 100%;
-  fill: white; // Matches the nav panel background color.
-  stroke: none;
+    position: absolute;
+    top: 0;
+    left: -99px; // This is the key to hiding the curve initially
+    width: 100px;
+    height: 100%;
+    fill: #1c1d20;
+    stroke: none;
 }
