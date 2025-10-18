@@ -42,7 +42,7 @@ const app = express();
 
 // ! CRITICAL: CORS must be configured to allow requests from your React frontend.
 app.use(cors({
-    origin: 'https://adoptly-tan.vercel.app', // =-= This MUST match the port your Vite/React dev server is running on.
+    origin: 'http://localhost:5173', // =-= This MUST match the port your Vite/React dev server is running on.
     credentials: true // * Allows frontend to send/receive cookies for authentication.
 }));
 
