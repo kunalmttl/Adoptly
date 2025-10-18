@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 // In production, it uses the URL defined in your hosting environment variables.
 const baseURL = import.meta.env.DEV
   ? 'http://localhost:3000/api/v1'
-  : import.meta.env.VITE_API_URL;     
+  : import.meta.env.VITE_API_URL;
 
 /**
  * A pre-configured Axios instance.
