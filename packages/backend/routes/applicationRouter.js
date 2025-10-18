@@ -1,19 +1,24 @@
-// # Application Router
+// packages/backend/routes/applicationRouter.js
 
 const express = require('express');
 const router = express.Router();
-const applicationController = require('../controllers/applicationController');
+const {
+  createApplication,
+  getMyApplications,
+  updateApplicationStatus,
+} = require('../controllers/applicationController');
 const isLoggedIn = require('../middlewares/isLoggedIn');
 
-// * Handles POST requests to /api/v1/applications
-// ! FIX: Use the correct 'isLoggedIn' middleware variable instead of the undefined 'authenticateUser'
-router.post('/', isLoggedIn, applicationController.createApplication);
+// All routes for applications are protected.
+router.use(isLoggedIn);
 
-// * Handles GET requests to /api/v1/applications/mine
-// ! FIX: Use the correct 'isLoggedIn' middleware variable
-router.get('/mine', isLoggedIn, applicationController.getMyApplications);
+// Create a new application.
+router.post('/', createApplication);
 
-router.patch('/:applicationId', isLoggedIn, applicationController.updateApplicationStatus);
+// Get all applications for the logged-in user.
+router.get('/mine', getMyApplications);
 
+// Update an application's status (approve/reject).
+router.patch('/:applicationId', updateApplicationStatus);
 
 module.exports = router;

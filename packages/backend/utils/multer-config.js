@@ -1,25 +1,25 @@
-// # Multer Configuration Utility
+
+// packages/backend/utils/multer-config.js
 
 const multer = require('multer');
-const path   = require('path');
+const path = require('path');
 const crypto = require('crypto');
 
-
-// * Configure how files are stored
+// Configure disk storage for uploaded files.
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // =-= Files will be saved in the 'public/images/pets' directory
+  destination: (req, file, cb) => {
+    // Save files to the 'public/images/pets' directory.
     cb(null, path.join(__dirname, '..', 'public', 'images', 'pets'));
   },
-  filename: function (req, file, cb) {
-    // * Generate a unique filename to prevent overwrites
-    const randomBytes = crypto.randomBytes(16).toString('hex');
+  filename: (req, file, cb) => {
+    // Generate a unique filename to prevent overwrites.
+    const randomHex = crypto.randomBytes(16).toString('hex');
     const extension = path.extname(file.originalname);
-    cb(null, `${randomBytes}${extension}`);
-  }
+    cb(null, `${randomHex}${extension}`);
+  },
 });
 
-// * Create the Multer upload instance
-const upload = multer({ storage: storage });
+// Create the Multer upload instance.
+const upload = multer({ storage });
 
 module.exports = upload;

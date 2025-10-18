@@ -1,15 +1,14 @@
-// # Contact Controller
+// packages/backend/controllers/contactController.js
 
-const User              = require('../models/user_model');
+const User = require('../models/user_model');
 const { sendContactEmail } = require('../utils/mailer');
 
+// Send a contact email from one user to another.
 const sendEmail = async (req, res) => {
-
   try {
     const { recipientId, subject, message } = req.body;
-    const sender = req.user; // Set by the isLoggedIn middleware
+    const sender = req.user; // Attached by authentication middleware.
 
-    // ! Validate input
     if (!recipientId || !subject || !message) {
       return res.status(400).json({ message: 'Recipient, subject, and message are required.' });
     }
@@ -19,13 +18,11 @@ const sendEmail = async (req, res) => {
       return res.status(404).json({ message: 'Recipient not found.' });
     }
 
-    // * Send the email using our mailer utility
     await sendContactEmail(recipient.email, sender.name, sender.email, subject, message);
 
     res.status(200).json({ message: 'Message sent successfully!' });
-
-  } catch (_error) {
-    console.error("! Error in sendEmail controller:", _error);
+  } catch (error) {
+    console.error('Error in sendEmail controller:', error);
     res.status(500).json({ message: 'Server error while sending message.' });
   }
 };
